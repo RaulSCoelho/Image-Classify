@@ -1,5 +1,6 @@
 from pathlib import Path
 from environs import Env
+import django_heroku
 
 env = Env()
 env.read_env(override=True)  # read .env file, if it exists
@@ -177,3 +178,6 @@ else:
     # Static file serving.
     # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Heroku settings
+django_heroku.settings(locals())
