@@ -1,1 +1,1 @@
-web: gunicorn src.imageclassify.wsgi --log-file -
+web: gunicorn imageclassify.wsgi --log-file -
