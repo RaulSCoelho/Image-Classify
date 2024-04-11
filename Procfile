@@ -1,1 +1,1 @@
-web: gunicorn imageclassify.wsgi --log-file -
+web: gunicorn --pythonpath imageclassify imageclassify.wsgi
