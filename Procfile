@@ -1,1 +1,1 @@
-web: gunicorn MyResume.wsgi --log-file -
+web: gunicorn imageclassify.wsgi --log-file -
