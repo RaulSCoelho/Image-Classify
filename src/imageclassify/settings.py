@@ -1,5 +1,6 @@
 from pathlib import Path
 from environs import Env
+import django_heroku
 
 env = Env()
 env.read_env(override=True)  # read .env file, if it exists
@@ -149,3 +150,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+django_heroku.settings(locals())
