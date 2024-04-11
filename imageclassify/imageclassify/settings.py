@@ -1,9 +1,6 @@
 from pathlib import Path
-from environs import Env
 import django_heroku
-
-env = Env()
-env.read_env(override=True)  # read .env file, if it exists
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,10 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", "")
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
 
 # SECURITY WARNING: don't run withenv("DEBUG") debug turned on in production!
-DEBUG = env.bool("DEBUG", True)
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ['*']
 
@@ -96,11 +93,11 @@ WSGI_APPLICATION = "imageclassify.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
     }
 }
 
@@ -151,12 +148,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # AWS configuration
 
-USE_AWS = env.bool("USE_AWS", False)
+USE_AWS = os.environ.get("USE_AWS", "False") == "True"
 
 if USE_AWS:
-    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
     AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     AWS_S3_FILE_OVERWRITE = False
 
