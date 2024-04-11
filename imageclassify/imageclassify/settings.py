@@ -1,6 +1,5 @@
 from pathlib import Path
 from environs import Env
-import django_heroku
 
 env = Env()
 env.read_env(override=True)  # read .env file, if it exists
@@ -34,6 +33,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'corsheaders',
     'rest_framework',
+    'storages',
     # internal apps
     'api',
 ]
@@ -142,13 +142,38 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/static/'
 
-# Static file serving.
-# https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-django_heroku.settings(locals())
+# AWS configuration
+
+USE_AWS = env.bool("USE_AWS", False)
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+
+# Basic Storage configuration for Amazon S3 (Irrespective of Django versions)
+
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+AWS_S3_FILE_OVERWRITE = False
+
+if USE_AWS:
+    STORAGES = {
+        # Media file (image) management
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+        # CSS and JS file management
+        "staticfiles": {
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+        },
+    }
+else:
+    # Static file serving.
+    # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

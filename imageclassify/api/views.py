@@ -12,9 +12,8 @@ class PredictionListCreate(generics.ListCreateAPIView):
     def perform_create(self, serializer: PredictionSerializer):
         # Read the image file and convert it to binary data
         image = self.request.FILES['image']
-        binary_image = image.read()
 
-        serializer.save(image=binary_image, prediction=predict_car(image))
+        serializer.save(prediction=predict_car(image))
 
 class PredictionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Prediction.objects.all()
@@ -24,23 +23,22 @@ class PredictionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer: PredictionSerializer):
         # Read the image file and convert it to binary data
         image = self.request.FILES['image']
-        binary_image = image.read()
 
-        serializer.save(image=binary_image, prediction=predict_car(image))
+        serializer.save(prediction=predict_car(image))
 
 def predict_car(image):
     mean = [0.4708, 0.4602, 0.4550]
     std = [0.2593, 0.2584, 0.2634]
 
     prediction = classify(
-        read_model('data/best_cars_model.pth'),
+        read_model('https://images-classify.s3.amazonaws.com/models/cars/best_cars_model.pth'),
         image,
         transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(torch.Tensor(mean), torch.Tensor(std))
         ]),
-        read_classes('data/classes.csv')
+        read_classes('https://images-classify.s3.amazonaws.com/models/cars/classes.csv')
     )
 
     return prediction
