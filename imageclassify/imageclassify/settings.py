@@ -17,7 +17,7 @@ SECRET_KEY = env("SECRET_KEY", "")
 # SECURITY WARNING: don't run withenv("DEBUG") debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
