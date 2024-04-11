@@ -1,3 +1,6 @@
+import torch
+from torchvision import transforms
+from utils.classification import classify, read_model, read_classes
 from rest_framework import generics
 from .models import Prediction
 from .serializers import PredictionSerializer
@@ -7,8 +10,11 @@ class PredictionListCreate(generics.ListCreateAPIView):
     serializer_class = PredictionSerializer
 
     def perform_create(self, serializer: PredictionSerializer):
-        prediction = 'predicted_label'
-        serializer.save(prediction=prediction)
+        # Read the image file and convert it to binary data
+        image = self.request.FILES['image']
+        binary_image = image.read()
+
+        serializer.save(image=binary_image, prediction=predict_car(image))
 
 class PredictionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Prediction.objects.all()
@@ -16,5 +22,25 @@ class PredictionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
     def perform_update(self, serializer: PredictionSerializer):
-        prediction = 'predicted_label'
-        serializer.save(prediction=prediction)
+        # Read the image file and convert it to binary data
+        image = self.request.FILES['image']
+        binary_image = image.read()
+
+        serializer.save(image=binary_image, prediction=predict_car(image))
+
+def predict_car(image):
+    mean = [0.4708, 0.4602, 0.4550]
+    std = [0.2593, 0.2584, 0.2634]
+
+    prediction = classify(
+        read_model('data/best_cars_model.pth'),
+        image,
+        transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(torch.Tensor(mean), torch.Tensor(std))
+        ]),
+        read_classes('data/classes.csv')
+    )
+
+    return prediction
