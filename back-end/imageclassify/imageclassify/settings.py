@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'storages',
     # internal apps
     'api',
+    'ai_models',
     'predictions',
 ]
 

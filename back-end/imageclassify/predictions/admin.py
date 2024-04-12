@@ -1,6 +1,7 @@
 from django.contrib import admin
-
-# Register your models here.
 from .models import Prediction
 
-admin.site.register(Prediction)
+class PredictionAdmin(admin.ModelAdmin):
+    readonly_fields = ['prediction']
+
+admin.site.register(Prediction, PredictionAdmin)

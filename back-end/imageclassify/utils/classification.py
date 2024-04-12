@@ -23,7 +23,7 @@ def read_classes(classes_path: str, col_name: str = 'Class') -> List[str]:
     classes_df = pd.read_csv(classes_path)
     return classes_df[col_name].values
 
-def classify(model: torch.nn.Module, image_path: str, image_transforms: transforms.Compose, classes: List[str]):
+def classify(image_path: str, model: torch.nn.Module, image_transforms: transforms.Compose, classes: List[str]):
     model = model.eval()
 
     image = Image.open(image_path)
