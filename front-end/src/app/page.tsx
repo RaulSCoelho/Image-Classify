@@ -1,17 +1,19 @@
 'use client'
 
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FaTrash } from 'react-icons/fa6'
 
 import { useApiArrayState } from '@/hooks/use-api-state'
 import { PredictInput, PredictOutput, Prediction, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Input, ScrollShadow } from '@nextui-org/react'
+import { Button, Input, ScrollShadow, Spinner } from '@nextui-org/react'
 import Image from 'next/image'
 
 export default function Home() {
   const {
     state: [predictions],
-    actions: { add }
+    actions: { add, remove }
   } = useApiArrayState<Prediction>({ url: 'predictions/' })
   const {
     watch,
@@ -19,6 +21,7 @@ export default function Home() {
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
+  const [removeQueue, setRemoveQueue] = useState<number[]>([])
   const image = watch('image')
 
   function onChangeImage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -26,6 +29,12 @@ export default function Home() {
       const file = e.target.files[0]
       setValue('image', file)
     }
+  }
+
+  async function deletePrediction(id: number) {
+    setRemoveQueue(prev => [...prev, id])
+    await remove('id', id)
+    setRemoveQueue(prev => prev.filter(i => i !== id))
   }
 
   async function onSubmit(image: PredictOutput) {
@@ -52,14 +61,25 @@ export default function Home() {
       <ScrollShadow hideScrollBar>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
           {predictions?.map((p: Prediction) => (
-            <div className="overflow-hidden rounded-medium bg-white/60" key={p.id}>
+            <div className="relative flex flex-col overflow-hidden rounded-medium bg-white/60" key={p.id}>
+              {removeQueue.includes(p.id) && (
+                <Spinner classNames={{ base: 'absolute inset-0 z-[1] bg-white/30', wrapper: 'h-10 w-10' }} />
+              )}
               <div className="relative h-40">
                 <Image src={p.image} alt={p.label} objectFit="cover" fill />
               </div>
-              <div className="p-3">
-                <p>{p.label}</p>
-                <p>{p.prediction}</p>
-                <p>{p.updated_at}</p>
+              <div className="flex grow gap-1 p-3">
+                <div className="grow">
+                  <p>{p.label}</p>
+                  <p>{p.prediction}</p>
+                  <p>{p.updated_at}</p>
+                </div>
+                <div className="flex items-end">
+                  <FaTrash
+                    className="cursor-pointer text-red-600 active:scale-95"
+                    onClick={() => deletePrediction(p.id)}
+                  />
+                </div>
               </div>
             </div>
           ))}
