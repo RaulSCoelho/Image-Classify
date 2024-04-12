@@ -58,7 +58,8 @@ ROOT_URLCONF = "imageclassify.urls"
 
 CORS_URLS_REGEX = r'^/api/.*'
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS False because it has no authentication
+CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_WHITELIST = [host for host in env("CORS_ALLOWED_ORIGINS", "").split(';') if host.startswith("http://") or host.startswith("https://")]
 
 TEMPLATES = [
