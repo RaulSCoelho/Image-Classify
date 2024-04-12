@@ -5,6 +5,9 @@ import { joinPaths } from '@/lib/url'
 import { ApiClientRequest, ApiClientResponse } from '@/types/api'
 
 import { useArrayState } from './use-array-state'
+// import useSWR from 'swr'
+// import { fetcher } from '@/lib/fetcher'
+// import useSWRMutation from 'swr/mutation'
 
 interface UseApiStateProps<T> {
   url: string
@@ -12,6 +15,18 @@ interface UseApiStateProps<T> {
   config?: ApiClientRequest<T>
   makeFirstRequest?: boolean
 }
+
+// interface UseSWRCustomProps<T> {
+//   url: string
+//   config?: SWRConfiguration<T>
+// }
+
+// type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2]
+
+// export function useSWRCustom<T>(url: string, config?: SWRConfiguration<T>){
+//   const state = useSWR(url, fetcher.get<T>(), config)
+//   const {trigger } = useSWRMutation()
+// }
 
 export function useApiState<T>({ url, config = {}, initialState, makeFirstRequest = true }: UseApiStateProps<T>) {
   const [state, setState] = useState<T | undefined>(initialState)
