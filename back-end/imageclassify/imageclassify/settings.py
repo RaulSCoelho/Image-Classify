@@ -20,7 +20,7 @@ DEBUG = env("DEBUG", "True") != "False"
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS", "*").split(';')
 
-CSRF_TRUSTED_ORIGINS = [host for host in ALLOWED_HOSTS if host.startswith("http://") or host.startswith("https://")]
+CSRF_TRUSTED_ORIGINS = [host for host in env("CSRF_TRUSTED_ORIGINS", "").split(';') if host]
 
 
 # Application definition
