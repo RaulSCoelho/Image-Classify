@@ -10,6 +10,7 @@ export default async function Home() {
   useFirstRenderEffect(() => {
     api.get('predictions/').then(response => {
       console.log(response)
+      setPredictions([])
     })
   })
 

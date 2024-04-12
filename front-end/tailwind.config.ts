@@ -11,7 +11,11 @@ const config: Config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      backgroundImage: {
+        app: 'linear-gradient(to right, #06A9EC, #7B53BB, #E7038E)'
+      }
+    }
   },
   plugins: [nextui()]
 }
