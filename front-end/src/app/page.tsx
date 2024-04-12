@@ -60,7 +60,7 @@ export default function Home() {
       </form>
       <ScrollShadow hideScrollBar>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
-          {predictions?.map((p: Prediction) => (
+          {predictions.reverse().map((p: Prediction) => (
             <div className="relative flex flex-col overflow-hidden rounded-medium bg-white/60" key={p.id}>
               {removeQueue.includes(p.id) && (
                 <Spinner classNames={{ base: 'absolute inset-0 z-[1] bg-white/30', wrapper: 'h-10 w-10' }} />
