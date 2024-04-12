@@ -19,6 +19,7 @@ SECRET_KEY = env("SECRET_KEY", "django-insecure-me3&#2i(5f5_w6gth01xf%y-ws7x=nsc
 DEBUG = env("DEBUG", "True") != "False"
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS", "*").split(';')
+
 CSRF_TRUSTED_ORIGINS = [host for host in ALLOWED_HOSTS if host.startswith("http://") or host.startswith("https://")]
 
 
@@ -54,7 +55,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "imageclassify.urls"
+
 CORS_URLS_REGEX = r'^/api/.*'
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [host for host in env("CORS_ALLOWED_ORIGINS", "").split(';') if host.startswith("http://") or host.startswith("https://")]
 
 TEMPLATES = [
