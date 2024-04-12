@@ -13,7 +13,7 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        app: 'linear-gradient(to right, #06A9EC, #7B53BB, #E7038E)'
+        app: 'linear-gradient(.3turn, #06A9EC, #7B53BB, #E7038E)'
       }
     }
   },
