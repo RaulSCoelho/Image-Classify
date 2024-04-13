@@ -1,9 +1,12 @@
 from pathlib import Path
 import django_heroku
-import environs
+import os
 
-env = environs.Env()
-env.read_env(override=True)
+def env(key: str, default):
+    if isinstance(default, bool):
+        return os.environ.get(key, str(default)) == "True"
+    return os.environ.get(key, default)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,9 +61,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = "imageclassify.urls"
 
 CORS_URLS_REGEX = r'^/api/.*'
-CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", False)
+CORS_ORIGIN_ALLOW_ALL = env("CORS_ORIGIN_ALLOW_ALL", False)
 # CORS_ALLOW_CREDENTIALS False because it has no authentication
-CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", False)
+CORS_ALLOW_CREDENTIALS = env("CORS_ALLOW_CREDENTIALS", False)
 CORS_ALLOWED_ORIGINS = [host for host in env("CORS_ALLOWED_ORIGINS", "").split(';') if host.startswith("http://") or host.startswith("https://")]
 
 TEMPLATES = [
@@ -143,7 +146,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # AWS configuration
 
-USE_AWS = env.bool("USE_AWS", False)
+USE_AWS = env("USE_AWS", False)
 
 if USE_AWS:
     AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
