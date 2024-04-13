@@ -2,7 +2,7 @@ from pathlib import Path
 import django_heroku
 import os
 
-def env(key: str, default):
+def env(key: str, default = None):
     if isinstance(default, bool):
         return os.environ.get(key, str(default)) == "True"
     return os.environ.get(key, default)
