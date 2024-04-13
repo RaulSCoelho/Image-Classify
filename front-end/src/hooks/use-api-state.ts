@@ -5,9 +5,8 @@ import { joinPaths } from '@/lib/url'
 import { ApiClientRequest, ApiClientResponse } from '@/types/api'
 
 import { useArrayState } from './use-array-state'
-// import useSWR from 'swr'
-// import { fetcher } from '@/lib/fetcher'
-// import useSWRMutation from 'swr/mutation'
+import useSWR from 'swr'
+import { fetcher } from '@/lib/fetcher'
 
 interface UseApiStateProps<T> {
   url: string
@@ -16,17 +15,61 @@ interface UseApiStateProps<T> {
   makeFirstRequest?: boolean
 }
 
-// interface UseSWRCustomProps<T> {
-//   url: string
-//   config?: SWRConfiguration<T>
-// }
+interface UseSWRCustomProps<T> {
+  url: string
+  config?: SWRConfiguration<T>
+}
 
-// type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2]
+type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2]
 
-// export function useSWRCustom<T>(url: string, config?: SWRConfiguration<T>){
-//   const state = useSWR(url, fetcher.get<T>(), config)
-//   const {trigger } = useSWRMutation()
-// }
+type SWRRequestProps<T> = ApiClientRequest<T> & { updateState?: boolean }
+
+export function useSWRCustom<T>(url: string, config?: SWRConfiguration<T>) {
+  const state = useSWR(url, fetcher.get<T>(), config)
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function baseRequest(promise: Promise<ApiClientResponse<T>>, updateState: boolean) {
+    setIsLoading(true)
+
+    const res = await promise
+    updateState && res.ok && res.data && state.mutate(res.data)
+
+    setIsLoading(false)
+    return res
+  }
+
+  async function get(props: SWRRequestProps<T> = {}) {
+    const { updateState = true, url: otherUrl, ...config } = props
+    return await baseRequest(api.get<T>(otherUrl || url, config), updateState)
+  }
+
+  async function post(body: any, props: SWRRequestProps<T> = {}) {
+    const { updateState = true, url: otherUrl, ...config } = props
+    setIsLoading(true)
+
+    const res = await api.post<T>(otherUrl || url, body, config)
+    updateState && res.ok && res.data && state.mutate(res.data)
+
+    setIsLoading(false)
+    return res
+  }
+
+  async function put(body: any, props: SWRRequestProps<T> = {}) {
+    const { updateState = true, url: otherUrl, ...config } = props
+    setIsLoading(true)
+
+    const res = await api.put<T>(otherUrl || url, body, config)
+    updateState && res.ok && res.data && state.mutate(res.data)
+
+    setIsLoading(false)
+    return res
+  }
+
+  async function remove(props: SWRRequestProps<T> = {}) {
+    const { updateState = true, url: otherUrl, ...config } = props
+    return await baseRequest(api.delete<T>(otherUrl || url, config), updateState)
+  }
+}
 
 export function useApiState<T>({ url, config = {}, initialState, makeFirstRequest = true }: UseApiStateProps<T>) {
   const [state, setState] = useState<T | undefined>(initialState)
