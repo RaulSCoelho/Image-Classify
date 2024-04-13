@@ -13,7 +13,10 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        app: 'linear-gradient(.3turn, #06A9EC, #7B53BB, #E7038E)'
+        app: `linear-gradient(40deg, #e7038eba, rgb(219 16 16 / 0%) 70.71%),
+              linear-gradient(224deg, rgba(0, 0, 0, 0), rgba(255, 255, 255, 1), rgba(0, 0, 0, 0) 100%),
+              linear-gradient(254deg, #7b53bbba, rgba(0, 255, 0, 0) 70.71%),
+              linear-gradient(68deg, #06a9ecba, rgba(255, 255, 255, 1) 70.71%);`
       }
     }
   },

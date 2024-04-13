@@ -1,4 +1,5 @@
 import './globals.css'
+import { Navbar } from '@/components/navbar'
 import { Providers } from '@/providers'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -18,8 +19,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.className} h-full bg-app antialiased`}>
-      <body className="overflow-auto scroll-smooth">
+    <html lang="en" className={`${inter.className} antialiased`}>
+      <body className="min-h-screen overflow-auto scroll-smooth bg-app">
+        <Navbar />
         <Providers>{children}</Providers>
       </body>
     </html>

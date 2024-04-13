@@ -1,13 +1,16 @@
 import { z } from 'zod'
 
+import { AIModel } from './ai-models'
+
 const MAX_FILE_SIZE = 5000000
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
 export interface Prediction {
   id: number
+  model: AIModel
   image: string
-  prediction: string
   label: string
+  prediction: string
   updated_at: string
 }
 
