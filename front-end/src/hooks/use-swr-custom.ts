@@ -17,7 +17,7 @@ export function useSWRCustom<T>(url: string, config?: SWRConfiguration<T>) {
     setIsLoading(true)
 
     const res = await promise
-    mutate && state.mutate(mutate(res))
+    res.ok && mutate && state.mutate(mutate(res))
 
     setIsLoading(false)
     return res
