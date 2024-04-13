@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.className} antialiased`}>
-      <body className="dark:bg-app-dark min-h-screen overflow-auto scroll-smooth bg-app">
+      <body className="dark:bg-app-dark min-h-[100dvh] overflow-auto scroll-smooth bg-app">
         <Navbar />
         <Providers>{children}</Providers>
       </body>
