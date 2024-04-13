@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env("SECRET_KEY", "django-insecure-me3&#2i(5f5_w6gth01xf%y-ws7x=nsc76lh(n#2dn03ef4b03-a=image-classify")
 
 # SECURITY WARNING: don't run withenv("DEBUG") debug turned on in production!
-DEBUG = env("DEBUG", "True") != "False"
+DEBUG = env("DEBUG", True)
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS", "*").split(';')
 
