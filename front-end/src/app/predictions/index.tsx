@@ -1,28 +1,24 @@
 'use client'
 import { useForm } from 'react-hook-form'
 
+import { ImageInput } from '@/components/input/image'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
 import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Card, Input, ScrollShadow } from '@nextui-org/react'
+import { Button, Card, ScrollShadow } from '@nextui-org/react'
 
 import { Prediction } from './prediction'
 
 export function CarsClassify() {
   const {
-    watch,
     setValue,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { isSubmitting }
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
   const { state, post, remove } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
-  const image = watch('image')
 
-  function onChangeImage(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files) {
-      const file = e.target.files[0]
-      setValue('image', file)
-    }
+  function onChangeImage(file?: File) {
+    setValue('image', file as File)
   }
 
   async function deletePrediction(id: number) {
@@ -40,17 +36,16 @@ export function CarsClassify() {
   }
 
   return (
-    <div className="flex max-h-[100dvh] flex-col gap-3 overflow-hidden p-5 sm:p-20">
-      <form onSubmit={handleSubmit(onSubmit as any)}>
-        <Card className="space-y-2 bg-background/60 p-5 pb-2 text-center" isBlurred>
-          <p className="text-lg font-bold">{image?.name || 'No file selected'}</p>
-          <Input type="file" onChange={onChangeImage} errorMessage={errors.image?.message} isInvalid={!!errors.image} />
-          <Button type="submit" color="secondary" isLoading={isSubmitting}>
+    <div className="max-h-[calc(100dvh-64px)] space-y-3 overflow-hidden p-5 sm:p-16">
+      <form className="flex justify-center" onSubmit={handleSubmit(onSubmit as any)}>
+        <Card className="max-w-xl space-y-2 bg-background/60 p-5 pb-2 text-center" isBlurred>
+          <ImageInput onChange={onChangeImage} />
+          <Button type="submit" color="secondary" className="mx-auto w-fit" isLoading={isSubmitting}>
             Guess
           </Button>
         </Card>
       </form>
-      <ScrollShadow className="-m-8 p-8" hideScrollBar>
+      <ScrollShadow className="-m-8 -mt-0 p-8" hideScrollBar>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
           {state.data?.reverse().map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
         </div>
