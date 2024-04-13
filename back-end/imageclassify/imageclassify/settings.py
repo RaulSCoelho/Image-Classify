@@ -58,9 +58,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = "imageclassify.urls"
 
 CORS_URLS_REGEX = r'^/api/.*'
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", False)
 # CORS_ALLOW_CREDENTIALS False because it has no authentication
-CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_CREDENTIALS = env.bool("CORS_ALLOW_CREDENTIALS", False)
 CORS_ALLOWED_ORIGINS = [host for host in env("CORS_ALLOWED_ORIGINS", "").split(';') if host.startswith("http://") or host.startswith("https://")]
 
 TEMPLATES = [
