@@ -33,10 +33,5 @@ export type Primitive = null | undefined | string | number | boolean | symbol | 
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & { _?: never })
 export type LiteralIntersection<T extends U, U extends Primitive> = T & (U & { _?: never })
 
-export type PotentialPromise<T extends (...args: any[]) => any = () => any> =
-  Parameters<T> extends []
-    ? () => ReturnType<T> | Promise<ReturnType<T>>
-    : (...args: Parameters<T>) => ReturnType<T> | Promise<ReturnType<T>>
-
 type ExtractClassValues<T extends { [key: string]: unknown }> = T[keyof T]
 export type ClassValue = ExtractClassValues<SlotsToClasses<string>>

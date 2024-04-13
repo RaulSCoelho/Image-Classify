@@ -20,17 +20,17 @@ export function Navbar() {
   ]
 
   return (
-    <NextUINavbar className="bg-background/60" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen} isBlurred>
+    <NextUINavbar
+      className="bg-background/60 text-foreground"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+      isBlurred
+    >
       <NavbarBrand className="h-full space-x-2">
         <NavbarMenuToggle className="sm:hidden" />
         <NextLink href="/" className="flex h-full items-center justify-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="logo"
-            classNames={{ wrapper: 'select-none h-full w-8 !max-w-none', img: 'object-contain' }}
-            fill
-          />
-          <p className="font-bold text-inherit">Image Classify</p>
+          <Image src="/logo.png" alt="logo" classNames={{ wrapper: 'h-full w-8' }} fill />
+          <p className="font-bold">Image Classify</p>
         </NextLink>
       </NavbarBrand>
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">

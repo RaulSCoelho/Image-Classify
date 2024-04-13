@@ -1,13 +1,12 @@
 'use client'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FaTrash } from 'react-icons/fa6'
 
 import { useSWRCustom } from '@/hooks/use-swr-custom'
-import { PredictInput, PredictOutput, Prediction, predictSchema } from '@/types/prediction'
+import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Input, ScrollShadow, Spinner } from '@nextui-org/react'
-import Image from 'next/image'
+import { Button, Card, Input, ScrollShadow } from '@nextui-org/react'
+
+import { Prediction } from './prediction'
 
 export function CarsClassify() {
   const {
@@ -16,8 +15,7 @@ export function CarsClassify() {
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
-  const { state, post, remove } = useSWRCustom<Prediction[]>('predictions/', { fallbackData: [] })
-  const [removeQueue, setRemoveQueue] = useState<number[]>([])
+  const { state, post, remove } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
   const image = watch('image')
 
   function onChangeImage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -28,14 +26,12 @@ export function CarsClassify() {
   }
 
   async function deletePrediction(id: number) {
-    setRemoveQueue(prev => [...prev, id])
     await remove({ url: `predictions/${id}/` })
-    setRemoveQueue(prev => prev.filter(i => i !== id))
   }
 
   async function onSubmit(image: PredictOutput) {
     if (!image) return
-    await post<Prediction>(image, {
+    await post<PredictionType>(image, {
       mutate: res => [...(state.data || []), res.data],
       headers: {
         'content-type': 'multipart/form-data'
@@ -44,42 +40,19 @@ export function CarsClassify() {
   }
 
   return (
-    <div className="flex max-h-[100dvh] flex-col gap-3 p-5 sm:p-20">
-      <form
-        className="space-y-2 rounded-medium bg-white/60 p-5 pb-2 text-center"
-        onSubmit={handleSubmit(onSubmit as any)}
-      >
-        <p className="text-lg font-bold">{image?.name || 'No file selected'}</p>
-        <Input type="file" onChange={onChangeImage} errorMessage={errors.image?.message} isInvalid={!!errors.image} />
-        <Button type="submit" color="secondary" isLoading={isSubmitting}>
-          Guess
-        </Button>
+    <div className="flex max-h-[100dvh] flex-col gap-3 overflow-hidden p-5 sm:p-20">
+      <form onSubmit={handleSubmit(onSubmit as any)}>
+        <Card className="space-y-2 bg-background/60 p-5 pb-2 text-center" isBlurred>
+          <p className="text-lg font-bold">{image?.name || 'No file selected'}</p>
+          <Input type="file" onChange={onChangeImage} errorMessage={errors.image?.message} isInvalid={!!errors.image} />
+          <Button type="submit" color="secondary" isLoading={isSubmitting}>
+            Guess
+          </Button>
+        </Card>
       </form>
-      <ScrollShadow hideScrollBar>
+      <ScrollShadow className="-m-8 p-8" hideScrollBar>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
-          {state.data?.reverse().map(p => (
-            <div className="relative flex flex-col overflow-hidden rounded-medium bg-white/60" key={p.id}>
-              {removeQueue.includes(p.id) && (
-                <Spinner classNames={{ base: 'absolute inset-0 z-[1] bg-white/30', wrapper: 'h-10 w-10' }} />
-              )}
-              <div className="relative h-40">
-                <Image src={p.image} alt={p.label} objectFit="cover" fill />
-              </div>
-              <div className="flex grow gap-1 p-3">
-                <div className="grow">
-                  <p>{p.label}</p>
-                  <p>{p.prediction}</p>
-                  <p>{p.updated_at}</p>
-                </div>
-                <div className="flex items-end">
-                  <FaTrash
-                    className="cursor-pointer text-red-600 active:scale-95"
-                    onClick={() => deletePrediction(p.id)}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+          {state.data?.reverse().map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
         </div>
       </ScrollShadow>
     </div>

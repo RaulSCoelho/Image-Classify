@@ -29,7 +29,7 @@ export default function Home() {
           </div>
         </CardBody>
         <CardFooter className="flex-col text-center">
-          <p className="mb-2 text-large text-gray-800">Ready to get started?</p>
+          <p className="mb-2 text-large text-default-800">Ready to get started?</p>
           <Button as={Link} href="/models">
             Upload Model
           </Button>
