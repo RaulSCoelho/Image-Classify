@@ -42,21 +42,25 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
     const { url: otherUrl, mutate, ...config } = props
     return await baseRequest(api.get<REQ>(otherUrl || url, config), mutate)
   }
+  get.isLoading = isLoading
 
   async function post<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
     return await baseRequest(api.post<REQ>(otherUrl || url, body, config), mutate)
   }
+  post.isLoading = isLoading
 
   async function put<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
     return await baseRequest(api.put<REQ>(otherUrl || url, body, config), mutate)
   }
+  put.isLoading = isLoading
 
   async function remove<REQ = T>(props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
     return await baseRequest(api.delete<REQ>(otherUrl || url, config), mutate)
   }
+  remove.isLoading = isLoading
 
-  return { state, isLoading: isLoading || state.isLoading, get, post, put, remove }
+  return { state, isAnyLoading: isLoading || state.isLoading, get, post, put, remove }
 }

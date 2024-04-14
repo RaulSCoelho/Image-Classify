@@ -19,12 +19,7 @@ export function CarsClassify() {
     handleSubmit,
     formState: { isSubmitting }
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
-  const {
-    state: predsState,
-    post,
-    remove,
-    isLoading
-  } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
+  const { state: predsState, post, remove } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/', {
     onFirstSuccess: models => onChangeModel(models[0].id)
   })
@@ -72,7 +67,7 @@ export function CarsClassify() {
           </FlexWrap>
         </Card>
       </form>
-      <PredictionsList predictions={predsState.data} remove={remove} isLoading={isLoading} />
+      <PredictionsList predictions={predsState.data} remove={remove} isLoading={predsState.isLoading} />
     </div>
   )
 }
