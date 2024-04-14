@@ -20,12 +20,7 @@ export function Navbar() {
   ]
 
   return (
-    <NextUINavbar
-      className="bg-background/60 text-foreground"
-      isMenuOpen={isMenuOpen}
-      onMenuOpenChange={setIsMenuOpen}
-      isBlurred
-    >
+    <NextUINavbar className="bg-background/60 text-foreground" isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
       <NavbarBrand className="h-full space-x-2">
         <NavbarMenuToggle className="sm:hidden" />
         <NextLink href="/" className="flex h-full items-center justify-center gap-2">

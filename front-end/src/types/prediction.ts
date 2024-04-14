@@ -16,6 +16,7 @@ export interface Prediction {
 
 export const predictSchema = z
   .object({
+    model_id: z.number().int(),
     image: z
       .custom<File>()
       .refine(file => file instanceof File, 'Image is required.')
@@ -27,6 +28,7 @@ export const predictSchema = z
   })
   .transform(data => {
     const formData = new FormData()
+    formData.append('model', String(data.model_id))
     formData.append('image', data.image)
     return formData
   })

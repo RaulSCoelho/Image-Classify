@@ -1,17 +1,28 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from '@/lib/api'
 import { fetcher } from '@/lib/fetcher'
+import { runPotentialPromise } from '@/lib/promise'
 import { ApiClientRequest, ApiClientResponse } from '@/types/api'
+import { PotentialPromise } from '@/types/promise'
 import useSWR from 'swr'
 
-export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2]
+export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
+  onFirstSuccess?: PotentialPromise<(data: T) => void>
+}
 export type SWRRequestMutate<T, RES> = (res: ApiClientResponse<RES>) => T
 export type SWRRequestProps<T, REQ> = ApiClientRequest<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
 
-export function useSWRCustom<T>(url: string, config?: SWRConfiguration<T>) {
+export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRConfiguration<T> = {}) {
   const state = useSWR(url, fetcher.get<T>(), config)
   const [isLoading, setIsLoading] = useState(false)
+  const [firstSuccess, setFirstSuccess] = useState(true)
+
+  useEffect(() => {
+    if (firstSuccess && state.data) {
+      runPotentialPromise(onFirstSuccess, state.data).finally(() => setFirstSuccess(false))
+    }
+  }, [firstSuccess, onFirstSuccess, state.data])
 
   async function baseRequest<REQ = T>(promise: Promise<ApiClientResponse<REQ>>, mutate?: SWRRequestMutate<T, REQ>) {
     setIsLoading(true)
