@@ -7,7 +7,7 @@ import { useSWRCustom } from '@/hooks/use-swr-custom'
 import { AIModel } from '@/types/ai-models'
 import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Autocomplete, AutocompleteItem, Button, Card, ScrollShadow } from '@nextui-org/react'
+import { Autocomplete, AutocompleteItem, Button, Card } from '@nextui-org/react'
 
 import { Prediction } from './prediction'
 
@@ -54,7 +54,7 @@ export function CarsClassify() {
   }
 
   return (
-    <div className="flex max-h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden p-5 sm:p-16">
+    <div className="flex flex-col gap-3 p-5 sm:p-16">
       <form className="flex justify-center" onSubmit={handleSubmit(onSubmit as any)}>
         <Card className="max-w-xl space-y-2 bg-background/60 p-5 pb-2 text-center" isBlurred>
           <ImageInput image={values.image} setImage={onChangeImage} />
@@ -77,11 +77,9 @@ export function CarsClassify() {
           </FlexWrap>
         </Card>
       </form>
-      <ScrollShadow className="-m-8 -mt-0 p-8" hideScrollBar>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
-          {predictions?.map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
-        </div>
-      </ScrollShadow>
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
+        {predictions?.map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
+      </div>
     </div>
   )
 }

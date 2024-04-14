@@ -1,6 +1,7 @@
 import { forwardRef, useRef } from 'react'
 import { FaCamera, FaTrash } from 'react-icons/fa6'
 
+import { mergeRefs } from '@/lib/refs'
 import { Card, CardFooter, tv } from '@nextui-org/react'
 
 import { Button } from '../button'
@@ -16,7 +17,7 @@ const imageInput = tv({
   base: 'aspect-video h-40'
 })
 
-export const ImageInput = forwardRef<HTMLInputElement, ImageInputProps>(({ image, setImage, className }) => {
+export const ImageInput = forwardRef<HTMLInputElement, ImageInputProps>(({ image, setImage, className }, ref) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +49,13 @@ export const ImageInput = forwardRef<HTMLInputElement, ImageInputProps>(({ image
         </Card>
       ) : (
         <div className="flex h-full w-full items-center justify-center rounded-large border-2 border-dashed border-default-600">
-          <input ref={inputRef} type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
+          <input
+            ref={mergeRefs(ref, inputRef)}
+            type="file"
+            className="hidden"
+            onChange={handleImageChange}
+            accept="image/*"
+          />
           <Button startContent={<FaCamera className="h-5 w-5 shrink-0" />} onPress={() => inputRef.current?.click()}>
             Select an image
           </Button>
