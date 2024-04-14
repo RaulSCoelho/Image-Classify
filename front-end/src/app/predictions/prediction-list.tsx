@@ -21,6 +21,7 @@ export function PredictionList({ predictions, remove, isLoading }: PredictionsPr
   if (preds) {
     preds = search(predictions, ['label', 'prediction'], navSearch)
   }
+  const hasPreds = len(preds) > 0
 
   async function deletePrediction(id: number) {
     await remove<void>({
@@ -31,15 +32,15 @@ export function PredictionList({ predictions, remove, isLoading }: PredictionsPr
     })
   }
 
+  if (!isLoading && !hasPreds) {
+    return <p className="my-8 text-center text-xl font-semibold text-default-800">No predictions found</p>
+  }
+
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
-      {isLoading ? (
-        range(10).map(i => <Skeleton className="h-48 w-full rounded-large" key={i} />)
-      ) : len(preds) > 0 ? (
-        preds?.map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)
-      ) : (
-        <div>No predictions found</div>
-      )}
+      {isLoading
+        ? range(10).map(i => <Skeleton className="h-48 w-full rounded-large" key={i} />)
+        : hasPreds && preds?.map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
     </div>
   )
 }
