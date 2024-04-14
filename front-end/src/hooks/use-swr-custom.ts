@@ -19,10 +19,10 @@ export type SWRCustomRemove<T> = ReturnType<typeof useSWRCustom<T>>['remove']
 
 export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRConfiguration<T> = {}) {
   const state = useSWR(url, fetcher.get<T>(), config)
-  const [getIsLoading, setGetIsLoading] = useState(false)
-  const [postIsLoading, setPostIsLoading] = useState(false)
-  const [putIsLoading, setPutIsLoading] = useState(false)
-  const [removeIsLoading, setRemoveIsLoading] = useState(false)
+  const [isGetLoading, setIsGetLoading] = useState(false)
+  const [isPostLoading, setIsPostLoading] = useState(false)
+  const [isPutLoading, setIsPutLoading] = useState(false)
+  const [isRemoveLoading, setIsRemoveLoading] = useState(false)
   const [firstSuccess, setFirstSuccess] = useState(true)
 
   useEffect(() => {
@@ -47,27 +47,27 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
 
   async function get<REQ = T>(props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.get<REQ>(otherUrl || url, config), setGetIsLoading, mutate)
+    return await baseRequest(api.get<REQ>(otherUrl || url, config), setIsGetLoading, mutate)
   }
-  get.isLoading = getIsLoading
+  get.isLoading = isGetLoading
 
   async function post<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.post<REQ>(otherUrl || url, body, config), setPostIsLoading, mutate)
+    return await baseRequest(api.post<REQ>(otherUrl || url, body, config), setIsPostLoading, mutate)
   }
-  post.isLoading = postIsLoading
+  post.isLoading = isPostLoading
 
   async function put<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.put<REQ>(otherUrl || url, body, config), setPutIsLoading, mutate)
+    return await baseRequest(api.put<REQ>(otherUrl || url, body, config), setIsPutLoading, mutate)
   }
-  put.isLoading = putIsLoading
+  put.isLoading = isPutLoading
 
   async function remove<REQ = T>(props: SWRRequestProps<T, REQ> = {}) {
     const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.delete<REQ>(otherUrl || url, config), setRemoveIsLoading, mutate)
+    return await baseRequest(api.delete<REQ>(otherUrl || url, config), setIsRemoveLoading, mutate)
   }
-  remove.isLoading = removeIsLoading
+  remove.isLoading = isRemoveLoading
 
   return {
     state,
@@ -75,6 +75,6 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
     post,
     put,
     remove,
-    isAnyLoading: state.isLoading || getIsLoading || postIsLoading || putIsLoading || removeIsLoading
+    isAnyLoading: state.isLoading || isGetLoading || isPostLoading || isPutLoading || isRemoveLoading
   }
 }
