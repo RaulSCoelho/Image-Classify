@@ -8,6 +8,10 @@ export function useNavSearch() {
 
   useFirstRenderEffect(() => {
     setSearchValue(prev => ({ ...prev, show: true }))
+
+    return () => {
+      setSearchValue(prev => ({ ...prev, show: false }))
+    }
   })
 
   return searchValue.value
