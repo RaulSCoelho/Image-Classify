@@ -9,7 +9,7 @@ import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchem
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Autocomplete, AutocompleteItem, Button, Card } from '@nextui-org/react'
 
-import { PredictionList } from './prediction-list'
+import { PredictionsList } from './predictions-list'
 
 export function CarsClassify() {
   const {
@@ -72,7 +72,7 @@ export function CarsClassify() {
           </FlexWrap>
         </Card>
       </form>
-      <PredictionList predictions={predsState.data} remove={remove} isLoading={isLoading} />
+      <PredictionsList predictions={predsState.data} remove={remove} isLoading={isLoading} />
     </div>
   )
 }

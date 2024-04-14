@@ -8,18 +8,18 @@ import { Skeleton } from '@nextui-org/react'
 
 import { Prediction } from './prediction'
 
-interface PredictionsProps {
+interface PredictionsListProps {
   predictions?: PredictionType[]
   remove: SWRCustomRemove<PredictionType[]>
   isLoading: boolean
 }
 
-export function PredictionList({ predictions, remove, isLoading }: PredictionsProps) {
+export function PredictionsList({ predictions, remove, isLoading }: PredictionsListProps) {
   const navSearch = useNavSearch()
   let preds = predictions?.slice().reverse()
 
   if (preds) {
-    preds = search(predictions, ['label', 'prediction'], navSearch)
+    preds = search(preds, ['label', 'prediction'], navSearch)
   }
   const hasPreds = len(preds) > 0
 
