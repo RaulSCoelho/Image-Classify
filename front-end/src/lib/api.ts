@@ -1,133 +1,90 @@
+import { ToastProps } from '@/components/toast'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/services/axios'
-import { ApiClientRequest, ApiClientResponse } from '@/types/api'
+import { ApiRequestConfig, ApiResponse, apiRequestConfigKeys } from '@/types/api'
 import { AxiosResponse } from 'axios'
 
 import { isObject } from './assertions'
+import { maybePromise } from './promise'
+import { mapPropsVariants } from './variants'
 
-interface RaiseToastProps {
-  title?: string
-  description?: string
-  error?: boolean
+interface RaiseToastProps<T> {
+  message: ApiRequestConfig<T>['successMessage'] | ApiRequestConfig<T>['errorMessage']
+  messageParam: any
+  type?: ToastProps['type']
   raiseToast?: boolean
 }
 
-interface OnSuccess<T>
-  extends Pick<ApiClientRequest<T>, 'successDataParam' | 'successMessage' | 'successCallback' | 'raiseToast'> {}
+async function baseRequest<T>(promise: Promise<AxiosResponse<T>>, config: ApiRequestConfig<T> = {}) {
+  try {
+    const res = await promise
+    return handleSuccess<T>(res, config)
+  } catch (error: any) {
+    return handleError(error, config)
+  }
+}
 
-interface OnError<T> extends Pick<ApiClientRequest<T>, 'errorMessage' | 'errorCallback' | 'raiseToast'> {}
+async function get<T>(url: string, config: ApiRequestConfig<T> = {}): Promise<ApiResponse<T>> {
+  const [axiosConfig, apiConfig] = mapPropsVariants(config, apiRequestConfigKeys)
+  return await baseRequest(apiClient.get<T>(url, axiosConfig), apiConfig)
+}
+
+async function post<T>(url: string, data: any, config: ApiRequestConfig<T> = {}): Promise<ApiResponse<T>> {
+  const [axiosConfig, apiConfig] = mapPropsVariants(config, apiRequestConfigKeys)
+  return await baseRequest(apiClient.post<T>(url, data, axiosConfig), apiConfig)
+}
+
+async function put<T>(url: string, data: any, config: ApiRequestConfig<T> = {}): Promise<ApiResponse<T>> {
+  const [axiosConfig, apiConfig] = mapPropsVariants(config, apiRequestConfigKeys)
+  return await baseRequest(apiClient.put<T>(url, data, axiosConfig), apiConfig)
+}
+
+async function remove<T>(url: string, config: ApiRequestConfig<T> = {}): Promise<ApiResponse<T>> {
+  const [axiosConfig, apiConfig] = mapPropsVariants(config, apiRequestConfigKeys)
+  return await baseRequest(apiClient.delete<T>(url, axiosConfig), apiConfig)
+}
 
 export const api = { get, post, put, delete: remove }
 
-function raiseToastFeedback({ title, description, error, raiseToast = true }: RaiseToastProps) {
-  if (raiseToast && description) {
-    toast({ title, message: description, type: error ? 'error' : 'success' })
+function raiseToastFeedback<T>({ messageParam, message, type, raiseToast = true }: RaiseToastProps<T>) {
+  if (typeof message === 'function') {
+    message = message(messageParam)
+  }
+  const title = typeof message === 'string' ? undefined : message?.title
+  const actualMessage = typeof message === 'string' ? message : message?.description
+
+  if (raiseToast && actualMessage) {
+    toast({ title, message: actualMessage, type: type || 'info' })
   }
 }
 
-function onSuccess<T>(
-  res: AxiosResponse<T, any>,
-  { successDataParam, successMessage, successCallback, raiseToast }: OnSuccess<T>
-) {
-  const title = typeof successMessage !== 'string' ? successMessage?.title : undefined
-  const description = typeof successMessage === 'string' ? successMessage : successMessage?.description
-  raiseToastFeedback({ title, description: description || getSuccessMessage(res, successDataParam), raiseToast })
-  successCallback?.(res)
-  return { ...res, ok: true }
+async function handleSuccess<T>(res: AxiosResponse<T>, config: ApiRequestConfig<T>) {
+  await maybePromise(config.onSuccess, res)
+
+  raiseToastFeedback({
+    messageParam: res,
+    message: config.successMessage || getSuccessMessage(res, config.successDataParam),
+    raiseToast: config.raiseToast,
+    type: 'success'
+  })
+
+  return { ok: true, ...res }
 }
 
-function onError<T>(error: any, { errorMessage: customErrorMessage, errorCallback, raiseToast }: OnError<T>) {
-  const title = typeof customErrorMessage !== 'string' ? customErrorMessage?.title : undefined
-  const description = typeof customErrorMessage === 'string' ? customErrorMessage : customErrorMessage?.description
+async function handleError<T>(error: any, config: ApiRequestConfig<T>) {
   const status = error.response?.status || 400
   const errorMessage = getErrorMessage(error)
 
-  raiseToastFeedback({ title, description: description || errorMessage, error: true, raiseToast })
-  errorCallback?.(error)
+  await maybePromise(config.onError, error)
 
-  return { data: error, statusText: errorMessage, status, ok: false }
-}
+  raiseToastFeedback({
+    messageParam: error,
+    message: config.errorMessage || errorMessage,
+    raiseToast: config.raiseToast,
+    type: 'error'
+  })
 
-async function get<T>(
-  url: string,
-  {
-    successMessage,
-    errorMessage,
-    successDataParam,
-    successCallback,
-    errorCallback,
-    raiseToast = true,
-    ...config
-  }: ApiClientRequest<T> = {}
-): Promise<ApiClientResponse<T>> {
-  try {
-    const res = await apiClient.get<T>(url, config)
-    return onSuccess<T>(res, { successDataParam, successMessage, successCallback, raiseToast })
-  } catch (error: any) {
-    return onError(error, { errorMessage, errorCallback, raiseToast })
-  }
-}
-
-async function post<T>(
-  url: string,
-  data: any,
-  {
-    successMessage,
-    errorMessage,
-    successDataParam,
-    successCallback,
-    errorCallback,
-    raiseToast = true,
-    ...config
-  }: ApiClientRequest<T> = {}
-): Promise<ApiClientResponse<T>> {
-  try {
-    const res = await apiClient.post<T>(url, data, config)
-    return onSuccess<T>(res, { successDataParam, successMessage, successCallback, raiseToast })
-  } catch (error: any) {
-    return onError(error, { errorMessage, errorCallback, raiseToast })
-  }
-}
-
-async function put<T>(
-  url: string,
-  data?: any,
-  {
-    successMessage,
-    errorMessage,
-    successDataParam,
-    successCallback,
-    errorCallback,
-    raiseToast = true,
-    ...config
-  }: ApiClientRequest<T> = {}
-): Promise<ApiClientResponse<T>> {
-  try {
-    const res = await apiClient.put<T>(url, data, config)
-    return onSuccess<T>(res, { successDataParam, successMessage, successCallback, raiseToast })
-  } catch (error: any) {
-    return onError(error, { errorMessage, errorCallback, raiseToast })
-  }
-}
-
-async function remove<T>(
-  url: string,
-  {
-    successMessage,
-    errorMessage,
-    successDataParam,
-    successCallback,
-    errorCallback,
-    raiseToast = true,
-    ...config
-  }: ApiClientRequest<T> = {}
-): Promise<ApiClientResponse<T>> {
-  try {
-    const res = await apiClient.delete<T>(url, config)
-    return onSuccess<T>(res, { successDataParam, successMessage, successCallback, raiseToast })
-  } catch (error: any) {
-    return onError(error, { errorMessage, errorCallback, raiseToast })
-  }
+  return { ok: false, data: error, status, statusText: errorMessage }
 }
 
 function getSuccessMessage(res: any = {}, successDataParam?: string | number | symbol) {

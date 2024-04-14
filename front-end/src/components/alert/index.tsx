@@ -11,7 +11,6 @@ import { AlertSlots, AlertVariantProps, alert } from './variants'
 export interface AlertProps extends ComponentPropsWithoutRef<typeof Collapse, AlertVariantProps, 'open'> {
   title?: string
   message?: string
-  type: 'success' | 'error' | 'alert' | 'info'
   classNames?: SlotsToClasses<AlertSlots>
   onClose?(): void
 }
@@ -24,7 +23,7 @@ const iconMap = {
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { title, message, type, className, classNames, onClose, ...rest },
+  { title, message, type = 'info', className, classNames, onClose, ...rest },
   ref
 ) {
   const classes = alert({ type })

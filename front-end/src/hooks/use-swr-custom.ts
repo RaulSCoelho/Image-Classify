@@ -3,15 +3,15 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import { fetcher } from '@/lib/fetcher'
 import { maybePromise } from '@/lib/promise'
-import { ApiClientRequest, ApiClientResponse } from '@/types/api'
+import { ApiRequestConfig, ApiResponse } from '@/types/api'
 import { MaybePromise } from '@/types/promise'
 import useSWR from 'swr'
 
 export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
   onFirstSuccess?: MaybePromise<(data: T) => void>
 }
-export type SWRRequestMutate<T, RES> = (res: ApiClientResponse<RES>) => T
-export type SWRRequestProps<T, REQ> = ApiClientRequest<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
+export type SWRRequestMutate<T, RES> = (res: ApiResponse<RES>) => T
+export type SWRCustomRequestConfig<T, REQ> = ApiRequestConfig<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
 export type SWRCustomGet<T> = ReturnType<typeof useSWRCustom<T>>['get']
 export type SWRCustomPost<T> = ReturnType<typeof useSWRCustom<T>>['post']
 export type SWRCustomPut<T> = ReturnType<typeof useSWRCustom<T>>['put']
@@ -32,7 +32,7 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
   }, [firstSuccess, onFirstSuccess, state.data])
 
   async function baseRequest<REQ = T>(
-    promise: Promise<ApiClientResponse<REQ>>,
+    promise: Promise<ApiResponse<REQ>>,
     setIsLoading: Dispatch<SetStateAction<boolean>>,
     mutate?: SWRRequestMutate<T, REQ>
   ) {
@@ -45,27 +45,27 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
     return res
   }
 
-  async function get<REQ = T>(props: SWRRequestProps<T, REQ> = {}) {
-    const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.get<REQ>(otherUrl || url, config), setIsGetLoading, mutate)
+  async function get<REQ = T>(configs: SWRCustomRequestConfig<T, REQ> = {}) {
+    const { url: otherUrl, mutate, ...restConfigs } = configs
+    return await baseRequest(api.get<REQ>(otherUrl || url, restConfigs), setIsGetLoading, mutate)
   }
   get.isLoading = isGetLoading
 
-  async function post<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
-    const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.post<REQ>(otherUrl || url, body, config), setIsPostLoading, mutate)
+  async function post<REQ = T>(body: any, configs: SWRCustomRequestConfig<T, REQ> = {}) {
+    const { url: otherUrl, mutate, ...restConfigs } = configs
+    return await baseRequest(api.post<REQ>(otherUrl || url, body, restConfigs), setIsPostLoading, mutate)
   }
   post.isLoading = isPostLoading
 
-  async function put<REQ = T>(body: any, props: SWRRequestProps<T, REQ> = {}) {
-    const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.put<REQ>(otherUrl || url, body, config), setIsPutLoading, mutate)
+  async function put<REQ = T>(body: any, configs: SWRCustomRequestConfig<T, REQ> = {}) {
+    const { url: otherUrl, mutate, ...restConfigs } = configs
+    return await baseRequest(api.put<REQ>(otherUrl || url, body, restConfigs), setIsPutLoading, mutate)
   }
   put.isLoading = isPutLoading
 
-  async function remove<REQ = T>(props: SWRRequestProps<T, REQ> = {}) {
-    const { url: otherUrl, mutate, ...config } = props
-    return await baseRequest(api.delete<REQ>(otherUrl || url, config), setIsRemoveLoading, mutate)
+  async function remove<REQ = T>(configs: SWRCustomRequestConfig<T, REQ> = {}) {
+    const { url: otherUrl, mutate, ...restConfigs } = configs
+    return await baseRequest(api.delete<REQ>(otherUrl || url, restConfigs), setIsRemoveLoading, mutate)
   }
   remove.isLoading = isRemoveLoading
 

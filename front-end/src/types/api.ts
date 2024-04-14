@@ -1,26 +1,37 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-export interface ApiClientRequest<T> extends AxiosRequestConfig<any> {
-  successMessage?:
-    | string
-    | {
-        title?: string
-        description?: string
-      }
-  errorMessage?:
-    | string
-    | {
-        title?: string
-        description?: string
-      }
+import { MaybePromise } from './promise'
+
+type Message = string | { title?: string; description?: string }
+
+export interface ApiRequestConfig<T = any> extends AxiosRequestConfig<T> {
+  successMessage?: Message | ((res: AxiosResponse<T>) => Message)
+  errorMessage?: Message | ((error: any) => Message)
   successDataParam?: string
-  successCallback?(res: AxiosResponse<T, any>): void
-  errorCallback?(error: any): void
   raiseToast?: boolean
+  onSuccess?: MaybePromise<(res: AxiosResponse<T>) => void>
+  onError?: MaybePromise<(error: any) => void>
 }
 
-export interface ApiClientResponse<T> extends Omit<AxiosResponse<T, any>, 'headers' | 'config'> {
+export interface ApiResponse<T = any> extends Omit<AxiosResponse<T>, 'headers' | 'config'> {
   ok: boolean
-  headers?: AxiosResponse<T, any>['headers']
-  config?: AxiosResponse<T, any>['config']
+  headers?: AxiosResponse<T>['headers']
+  config?: AxiosResponse<T>['config']
 }
+
+type ApiRequestConfigField =
+  | 'successMessage'
+  | 'errorMessage'
+  | 'successDataParam'
+  | 'raiseToast'
+  | 'onSuccess'
+  | 'onError'
+
+export const apiRequestConfigKeys: ApiRequestConfigField[] = [
+  'successMessage',
+  'errorMessage',
+  'successDataParam',
+  'raiseToast',
+  'onSuccess',
+  'onError'
+]
