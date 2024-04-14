@@ -3,10 +3,18 @@
 import { useState } from 'react'
 import { FaGithub } from 'react-icons/fa6'
 
-import { Navbar as NextUINavbar, NavbarBrand, NavbarContent, NavbarMenuToggle, NavbarMenu } from '@nextui-org/react'
+import {
+  Navbar as NextUINavbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarMenuToggle,
+  NavbarMenu,
+  NavbarItem
+} from '@nextui-org/react'
 import NextLink from 'next/link'
 
 import { Image } from '../image'
+import { ThemeSwitch } from '../theme-switch'
 import { NavLink } from './nav-link'
 import { NavSearch } from './nav-search'
 
@@ -36,11 +44,13 @@ export function Navbar() {
         ))}
       </NavbarContent>
       <NavbarContent justify="end">
-        <NextLink href="https://github.com/RaulSCoelho/Image-Classify" target="_blank">
-          <FaGithub className="h-8 w-8 shrink-0 cursor-pointer touch-none p-1 transition-opacity hover:opacity-80" />
-        </NextLink>
+        <NavLink icon={FaGithub} href="https://github.com/RaulSCoelho/Image-Classify" />
+        <NavbarItem className="flex h-full items-center">
+          <ThemeSwitch />
+        </NavbarItem>
         <NavSearch />
       </NavbarContent>
+
       <NavbarMenu className="bg-background/60">
         {menuItems.map((item, index) => (
           <NavLink href={item.href} key={`${item.label}-${index}`} isMenu>
