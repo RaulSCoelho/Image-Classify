@@ -4,11 +4,20 @@ import { SearchInput } from '../input/search'
 
 export const navSearchState = atom({
   key: 'navSearchState',
-  default: ''
+  default: {
+    show: false,
+    value: ''
+  }
 })
 
 export function NavSearch() {
   const [searchValue, setSearchValue] = useRecoilState(navSearchState)
 
-  return <SearchInput value={searchValue} className="hidden sm:flex" onValueChange={setSearchValue} />
+  function onValueChange(value: string) {
+    setSearchValue(prev => ({ ...prev, value }))
+  }
+
+  if (!searchValue.show) return null
+
+  return <SearchInput value={searchValue.value} className="hidden sm:flex" onValueChange={onValueChange} />
 }
