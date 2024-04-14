@@ -3,11 +3,14 @@ import { useForm } from 'react-hook-form'
 
 import { FlexWrap } from '@/components/flex-wrap'
 import { ImageInput } from '@/components/input/image'
+import { navSearchState } from '@/components/navbar/nav-search'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
+import { search } from '@/lib/string'
 import { AIModel } from '@/types/ai-models'
 import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Autocomplete, AutocompleteItem, Button, Card } from '@nextui-org/react'
+import { useRecoilValue } from 'recoil'
 
 import { Prediction } from './prediction'
 
@@ -24,7 +27,12 @@ export function CarsClassify() {
     onFirstSuccess: models => onChangeModel(models[0].id)
   })
   const values = watch()
-  const predictions = predsState.data?.slice().reverse()
+  const navSearch = useRecoilValue(navSearchState)
+  let predictions = predsState.data?.slice().reverse()
+
+  if (navSearch) {
+    predictions = search(predictions || [], ['label', 'prediction'], navSearch)
+  }
 
   function onChangeModel(id: string | number) {
     setValue('model_id', Number(id))

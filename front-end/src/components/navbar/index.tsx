@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { FaGithub } from 'react-icons/fa6'
 
-import { SearchInput } from '@/components/input/search'
 import { Navbar as NextUINavbar, NavbarBrand, NavbarContent, NavbarMenuToggle, NavbarMenu } from '@nextui-org/react'
 import NextLink from 'next/link'
 
 import { Image } from '../image'
 import { NavLink } from './nav-link'
+import { NavSearch } from './nav-search'
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -39,7 +39,7 @@ export function Navbar() {
         <NextLink href="https://github.com/RaulSCoelho/Image-Classify" target="_blank">
           <FaGithub className="h-8 w-8 shrink-0 cursor-pointer touch-none p-1 transition-opacity hover:opacity-80" />
         </NextLink>
-        <SearchInput className="hidden sm:flex" />
+        <NavSearch />
       </NavbarContent>
       <NavbarMenu className="bg-background/60">
         {menuItems.map((item, index) => (
