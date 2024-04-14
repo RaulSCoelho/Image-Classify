@@ -2,13 +2,13 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 import { api } from '@/lib/api'
 import { fetcher } from '@/lib/fetcher'
-import { runPotentialPromise } from '@/lib/promise'
+import { maybePromise } from '@/lib/promise'
 import { ApiClientRequest, ApiClientResponse } from '@/types/api'
-import { PotentialPromise } from '@/types/promise'
+import { MaybePromise } from '@/types/promise'
 import useSWR from 'swr'
 
 export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
-  onFirstSuccess?: PotentialPromise<(data: T) => void>
+  onFirstSuccess?: MaybePromise<(data: T) => void>
 }
 export type SWRRequestMutate<T, RES> = (res: ApiClientResponse<RES>) => T
 export type SWRRequestProps<T, REQ> = ApiClientRequest<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
@@ -27,7 +27,7 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
 
   useEffect(() => {
     if (firstSuccess && state.data) {
-      runPotentialPromise(onFirstSuccess, state.data).finally(() => setFirstSuccess(false))
+      maybePromise(onFirstSuccess, state.data).finally(() => setFirstSuccess(false))
     }
   }, [firstSuccess, onFirstSuccess, state.data])
 

@@ -15,7 +15,7 @@ export async function all<T>(promises?: Promise<T>[]) {
   return await Promise.all(promises)
 }
 
-export async function runPotentialPromise<T extends (...args: any[]) => any>(
+export async function maybePromise<T extends (...args: any[]) => any>(
   func?: T,
   ...args: Parameters<T>
 ): Promise<ReturnType<T>> {

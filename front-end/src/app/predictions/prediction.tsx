@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { FaTrash } from 'react-icons/fa6'
 
 import { Image } from '@/components/image'
-import { runPotentialPromise } from '@/lib/promise'
+import { maybePromise } from '@/lib/promise'
 import { Prediction as PredictionType } from '@/types/prediction'
-import { PotentialPromise } from '@/types/promise'
+import { MaybePromise } from '@/types/promise'
 import { Card, CardFooter, Spinner } from '@nextui-org/react'
 
 interface PredictionProps {
   prediction: PredictionType
-  onDelete?: PotentialPromise<(id: number) => void>
+  onDelete?: MaybePromise<(id: number) => void>
 }
 
 export function Prediction({ prediction, onDelete }: PredictionProps) {
@@ -17,7 +17,7 @@ export function Prediction({ prediction, onDelete }: PredictionProps) {
 
   async function handleDelete() {
     setIsLoading(true)
-    await runPotentialPromise(onDelete, prediction.id)
+    await maybePromise(onDelete, prediction.id)
     setIsLoading(false)
   }
 
