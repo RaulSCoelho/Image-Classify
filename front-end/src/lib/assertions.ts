@@ -1,4 +1,4 @@
-import { len } from './utils'
+import { len } from './object'
 
 export type Dict<T = any> = Record<string, T>
 

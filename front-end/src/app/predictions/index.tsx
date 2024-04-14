@@ -3,15 +3,13 @@ import { useForm } from 'react-hook-form'
 
 import { FlexWrap } from '@/components/flex-wrap'
 import { ImageInput } from '@/components/input/image'
-import { useNavSearch } from '@/hooks/use-nav-search'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
-import { search } from '@/lib/string'
 import { AIModel } from '@/types/ai-models'
 import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Autocomplete, AutocompleteItem, Button, Card } from '@nextui-org/react'
 
-import { Prediction } from './prediction'
+import { PredictionList } from './prediction-list'
 
 export function CarsClassify() {
   const {
@@ -21,17 +19,16 @@ export function CarsClassify() {
     handleSubmit,
     formState: { isSubmitting }
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
-  const { state: predsState, post, remove } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
+  const {
+    state: predsState,
+    post,
+    remove,
+    isLoading
+  } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/', {
     onFirstSuccess: models => onChangeModel(models[0].id)
   })
   const values = watch()
-  const navSearch = useNavSearch()
-  let predictions = predsState.data?.slice().reverse()
-
-  if (navSearch) {
-    predictions = search(predictions || [], ['label', 'prediction'], navSearch)
-  }
 
   function onChangeModel(id: string | number) {
     setValue('model_id', Number(id))
@@ -39,15 +36,6 @@ export function CarsClassify() {
 
   function onChangeImage(file?: File) {
     setValue('image', file as File)
-  }
-
-  async function deletePrediction(id: number) {
-    await remove<void>({
-      url: `predictions/${id}/`,
-      mutate: () => {
-        return predsState.data?.filter(p => p.id !== id) || []
-      }
-    })
   }
 
   async function onSubmit(formData: PredictOutput) {
@@ -84,9 +72,7 @@ export function CarsClassify() {
           </FlexWrap>
         </Card>
       </form>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
-        {predictions?.map(p => <Prediction prediction={p} onDelete={deletePrediction} key={p.id} />)}
-      </div>
+      <PredictionList predictions={predsState.data} remove={remove} isLoading={isLoading} />
     </div>
   )
 }

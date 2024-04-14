@@ -1,4 +1,4 @@
-import { len } from './utils'
+import { len } from './object'
 
 export function joinPaths(baseURL: string | number, ...paths: (string | number)[]): string {
   return [baseURL, ...paths]

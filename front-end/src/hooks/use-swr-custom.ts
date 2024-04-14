@@ -12,6 +12,10 @@ export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
 }
 export type SWRRequestMutate<T, RES> = (res: ApiClientResponse<RES>) => T
 export type SWRRequestProps<T, REQ> = ApiClientRequest<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
+export type SWRCustomGet<T> = ReturnType<typeof useSWRCustom<T>>['get']
+export type SWRCustomPost<T> = ReturnType<typeof useSWRCustom<T>>['post']
+export type SWRCustomPut<T> = ReturnType<typeof useSWRCustom<T>>['put']
+export type SWRCustomRemove<T> = ReturnType<typeof useSWRCustom<T>>['remove']
 
 export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRConfiguration<T> = {}) {
   const state = useSWR(url, fetcher.get<T>(), config)
@@ -54,5 +58,5 @@ export function useSWRCustom<T>(url: string, { onFirstSuccess, ...config }: SWRC
     return await baseRequest(api.delete<REQ>(otherUrl || url, config), mutate)
   }
 
-  return { state, isLoading, get, post, put, remove }
+  return { state, isLoading: isLoading || state.isLoading, get, post, put, remove }
 }

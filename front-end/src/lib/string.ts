@@ -21,12 +21,14 @@ export function join(...strings: (string | undefined | null)[]) {
 }
 
 export function search<T, K extends keyof T>(
-  array: T[],
+  array: T[] | undefined,
   searchParam: K | K[],
   searchTerm: string,
   shouldSort: boolean = true,
   orderBy?: OrderBy
 ) {
+  if (!array) return undefined
+
   const searchParams = isArray(searchParam) ? searchParam : [searchParam]
   const filteredItems = array.filter(item => {
     const values = searchParams.map(searchParam => String(item[searchParam]))
