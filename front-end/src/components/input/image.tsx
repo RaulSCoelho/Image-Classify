@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from 'react'
+import { forwardRef, useRef } from 'react'
 import { FaCamera, FaTrash } from 'react-icons/fa6'
 
 import { Card, CardFooter, tv } from '@nextui-org/react'
@@ -7,7 +7,8 @@ import { Button } from '../button'
 import { Image } from '../image'
 
 interface ImageInputProps {
-  onChange?(file?: File): void
+  image?: File
+  setImage(file?: File): void
   className?: string
 }
 
@@ -15,36 +16,33 @@ const imageInput = tv({
   base: 'aspect-video h-40'
 })
 
-export const ImageInput = forwardRef<HTMLInputElement, ImageInputProps>(({ className, onChange }) => {
-  const [selectedImage, setSelectedImage] = useState<File>()
+export const ImageInput = forwardRef<HTMLInputElement, ImageInputProps>(({ image, setImage, className }) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      setSelectedImage(file)
-      onChange?.(file)
+      setImage(file)
     }
   }
 
   const clearImage = () => {
-    setSelectedImage(undefined)
-    onChange?.()
+    setImage()
   }
 
   return (
     <div className={imageInput({ className })}>
-      {selectedImage ? (
+      {image ? (
         <Card radius="lg" className="h-full w-full" isFooterBlurred>
           <Image
-            src={URL.createObjectURL(selectedImage)}
-            alt={selectedImage.name}
+            src={URL.createObjectURL(image)}
+            alt={image.name}
             classNames={{ wrapper: 'h-full w-full', img: 'object-cover' }}
             radius="none"
             fill
           />
           <CardFooter className="absolute bottom-1 z-[11] ml-1 w-[calc(100%_-_8px)] justify-between overflow-hidden rounded-large border-1 border-white/20 py-1 shadow-small before:rounded-xl before:bg-white/10">
-            <p className="text-sm text-white/80">{selectedImage.name}</p>
+            <p className="text-sm text-white/80">{image.name}</p>
             <FaTrash className="cursor-pointer text-red-600 active:scale-95" onClick={clearImage} />
           </CardFooter>
         </Card>

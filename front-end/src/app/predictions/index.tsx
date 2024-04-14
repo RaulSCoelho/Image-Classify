@@ -14,6 +14,7 @@ import { Prediction } from './prediction'
 export function CarsClassify() {
   const {
     watch,
+    reset,
     setValue,
     handleSubmit,
     formState: { isSubmitting }
@@ -34,13 +35,21 @@ export function CarsClassify() {
   }
 
   async function deletePrediction(id: number) {
-    await remove({ url: `predictions/${id}/` })
+    await remove<void>({
+      url: `predictions/${id}/`,
+      mutate: () => {
+        return predsState.data?.filter(p => p.id !== id) || []
+      }
+    })
   }
 
   async function onSubmit(formData: PredictOutput) {
     if (!formData) return
     await post<PredictionType>(formData, {
-      mutate: res => [...(predsState.data || []), res.data]
+      mutate: res => {
+        reset({ model_id: values.model_id })
+        return [...(predsState.data || []), res.data]
+      }
     })
   }
 
@@ -48,7 +57,7 @@ export function CarsClassify() {
     <div className="flex max-h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden p-5 sm:p-16">
       <form className="flex justify-center" onSubmit={handleSubmit(onSubmit as any)}>
         <Card className="max-w-xl space-y-2 bg-background/60 p-5 pb-2 text-center" isBlurred>
-          <ImageInput onChange={onChangeImage} />
+          <ImageInput image={values.image} setImage={onChangeImage} />
           <FlexWrap className="justify-center">
             <Autocomplete
               label="Select a model"
