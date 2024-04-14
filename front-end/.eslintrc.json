@@ -1,3 +1,6 @@
 {
-  "extends": ["@raulscoelho/eslint-config/next", "next/core-web-vitals"]
+  "extends": ["@raulscoelho/eslint-config/next", "next/core-web-vitals"],
+  "rules": {
+    "react/no-unescaped-entities": "off"
+  }
 }
