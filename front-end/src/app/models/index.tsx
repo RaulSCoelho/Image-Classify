@@ -74,6 +74,7 @@ export function AIModels() {
         renderCell={renderCell}
         filterFields={['id', 'name', 'model_file']}
         initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
+        bodyProps={{ isLoading: modelsState.isLoading }}
         columns={[
           { name: 'ID', uid: 'id', sortable: true },
           { name: 'NAME', uid: 'name', sortable: true },

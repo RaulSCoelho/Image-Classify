@@ -1,4 +1,10 @@
-import { TableProps as NextUITableProps, Selection, SortDescriptor } from '@nextui-org/react'
+import {
+  TableProps as NextUITableProps,
+  Selection,
+  SortDescriptor,
+  TableBodyProps,
+  TableHeaderProps
+} from '@nextui-org/react'
 
 import { TableColumnSelector } from './column-selector'
 import { TableSearch } from './search'
@@ -41,4 +47,6 @@ export interface TableProps<T extends IdField>
   onSelectionChange(keys: Selection): any
   onCellAction?(key: string, cell: string): void
   topContent?: TableTopContent<T>
+  headerProps?: Omit<TableHeaderProps<T>, 'children' | 'columns'>
+  bodyProps?: Omit<TableBodyProps<T>, 'children' | 'items' | 'emptyContent'>
 }

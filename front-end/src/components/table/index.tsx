@@ -32,6 +32,8 @@ export function Table<T extends IdField>({
   onSelectionChange,
   onCellAction,
   topContent,
+  headerProps = {},
+  bodyProps = {},
   ...rest
 }: TableProps<T>) {
   const [page, setPage] = useRecoilState(tablePageState)
@@ -76,7 +78,7 @@ export function Table<T extends IdField>({
       isHeaderSticky={isHeaderSticky}
       {...rest}
     >
-      <TableHeader columns={headerColumns}>
+      <TableHeader columns={headerColumns} {...headerProps}>
         {column => {
           return (
             <TableColumn
@@ -89,7 +91,7 @@ export function Table<T extends IdField>({
           )
         }}
       </TableHeader>
-      <TableBody emptyContent={emptyContent} items={sortedItems}>
+      <TableBody emptyContent={emptyContent} items={sortedItems} {...bodyProps}>
         {item => (
           <TableRow key={'id' in item ? item.id : item._id}>
             {columnKey => <TableCell>{renderCell(item, columnKey as keyof T)}</TableCell>}
