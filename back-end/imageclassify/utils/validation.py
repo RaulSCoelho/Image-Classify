@@ -9,6 +9,11 @@ def validate_model_extension(value):
         raise ValidationError('Invalid model file extension. Must be .pt or .pth.')
 
 def validate_classes_file(value):
+    valid_extensions = ['.csv']
+    ext = os.path.splitext(value.name)[1]
+    if ext.lower() not in valid_extensions:
+        raise ValidationError('Invalid classes file extension. Must be .csv.')
+
     try:
         df = pd.read_csv(value)
         if len(df.columns) != 1 or df.columns[0] != 'Class':
