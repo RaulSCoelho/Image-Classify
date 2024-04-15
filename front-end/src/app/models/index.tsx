@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
+import { Button } from '@/components/button'
 import { FlexWrap } from '@/components/flex-wrap'
 import { Table } from '@/components/table'
 import { TableTopContent } from '@/components/table/types'
@@ -26,9 +27,12 @@ export function AIModels() {
 
   const topContent: TableTopContent<AIModel> = useCallback(
     ({ filterFields, columns, TableSearch, TableColumnSelector }) => (
-      <FlexWrap>
+      <FlexWrap className="justify-between">
+        <div className="flex gap-2">
+          <TableColumnSelector columns={columns} />
+          <Button>New</Button>
+        </div>
         <TableSearch filterFields={filterFields} />
-        <TableColumnSelector columns={columns} />
       </FlexWrap>
     ),
     []
