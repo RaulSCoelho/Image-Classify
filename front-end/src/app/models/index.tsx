@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
+import { FlexWrap } from '@/components/flex-wrap'
 import { Table } from '@/components/table'
 import { TableTopContent } from '@/components/table/types'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
@@ -25,10 +26,10 @@ export function AIModels() {
 
   const topContent: TableTopContent<AIModel> = useCallback(
     ({ filterFields, columns, TableSearch, TableColumnSelector }) => (
-      <div className="flex items-center justify-between gap-2">
+      <FlexWrap>
         <TableSearch filterFields={filterFields} />
         <TableColumnSelector columns={columns} />
-      </div>
+      </FlexWrap>
     ),
     []
   )
