@@ -1,13 +1,14 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 import { MaybePromise } from './promise'
+import { LiteralUnion, Primitive } from './utils'
 
 type Message = string | { title?: string; description?: string }
 
 export interface ApiRequestConfig<T = any> extends AxiosRequestConfig<T> {
   successMessage?: Message | ((res: AxiosResponse<T>) => Message)
   errorMessage?: Message | ((error: any) => Message)
-  successDataParam?: string
+  successMessageKey?: T extends Primitive ? T : LiteralUnion<keyof T, string>
   raiseToast?: boolean
   onSuccess?: MaybePromise<(res: AxiosResponse<T>) => void>
   onError?: MaybePromise<(error: any) => void>
@@ -22,7 +23,7 @@ export interface ApiResponse<T = any> extends Omit<AxiosResponse<T>, 'headers' |
 type ApiRequestConfigField =
   | 'successMessage'
   | 'errorMessage'
-  | 'successDataParam'
+  | 'successMessageKey'
   | 'raiseToast'
   | 'onSuccess'
   | 'onError'
@@ -30,7 +31,7 @@ type ApiRequestConfigField =
 export const apiRequestConfigKeys: ApiRequestConfigField[] = [
   'successMessage',
   'errorMessage',
-  'successDataParam',
+  'successMessageKey',
   'raiseToast',
   'onSuccess',
   'onError'

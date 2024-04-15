@@ -63,7 +63,7 @@ async function handleSuccess<T>(res: AxiosResponse<T>, config: ApiRequestConfig<
 
   raiseToastFeedback({
     messageParam: res,
-    message: config.successMessage || getSuccessMessage(res, config.successDataParam),
+    message: config.successMessage || getSuccessMessage(res, config.successMessageKey),
     raiseToast: config.raiseToast,
     type: 'success'
   })
@@ -87,9 +87,9 @@ async function handleError<T>(error: any, config: ApiRequestConfig<T>) {
   return { ok: false, data: error, status, statusText: errorMessage }
 }
 
-function getSuccessMessage(res: any = {}, successDataParam?: string | number | symbol) {
-  if (!successDataParam) return
-  return res.data?.[successDataParam]
+function getSuccessMessage<T>(res: any = {}, successMessageKey?: ApiRequestConfig<T>['successMessageKey']) {
+  if (!successMessageKey) return
+  return res.data?.[successMessageKey]
 }
 
 function getErrorMessage(error: any) {

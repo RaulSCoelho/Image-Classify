@@ -1,21 +1,22 @@
-import { apiClient } from '@/services/axios'
-import { AxiosRequestConfig } from 'axios'
+import { ApiRequestConfig } from '@/types/api'
+
+import { api } from './api'
 
 export const fetcher = {
   get:
-    <T>(config?: AxiosRequestConfig<T>) =>
+    <T = any>(config?: ApiRequestConfig<T>) =>
     (url: string) =>
-      apiClient.get<T>(url, config).then(res => res.data),
+      api.get<T>(url, config).then(res => res.data),
   post:
-    <T, R = any>(config?: AxiosRequestConfig<T>) =>
-    (url: string, { arg }: { arg: T }) =>
-      apiClient.post<R>(url, arg, config).then(res => res.data),
+    <T = any>(config?: ApiRequestConfig<T>) =>
+    (url: string, { arg }: { arg: any }) =>
+      api.post<T>(url, arg, config).then(res => res.data),
   put:
-    <T, R = any>(config?: AxiosRequestConfig<T>) =>
-    (url: string, { arg }: { arg: T }) =>
-      apiClient.put<R>(url, arg, config).then(res => res.data),
+    <T = any>(config?: ApiRequestConfig<T>) =>
+    (url: string, { arg }: { arg: any }) =>
+      api.put<T>(url, arg, config).then(res => res.data),
   delete:
-    <T>(config?: AxiosRequestConfig<T>) =>
+    <T = any>(config?: ApiRequestConfig<T>) =>
     (url: string) =>
-      apiClient.delete<T>(url, config).then(res => res.data)
+      api.delete<T>(url, config).then(res => res.data)
 }

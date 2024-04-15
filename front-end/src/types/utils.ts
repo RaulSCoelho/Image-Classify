@@ -30,8 +30,8 @@ export type ComponentPropsWithoutRef<
 > = MergeTypes<ReactComponentPropsWithoutRef<T1>, T2, OmitKeys>
 
 export type Primitive = null | undefined | string | number | boolean | symbol | bigint
-export type LiteralUnion<T extends U, U extends Primitive> = T | (U & { _?: never })
-export type LiteralIntersection<T extends U, U extends Primitive> = T & (U & { _?: never })
+export type LiteralUnion<T, U extends Primitive> = T | (U & { _?: never })
+export type LiteralIntersection<T, U extends Primitive> = T & (U & { _?: never })
 
 type ExtractClassValues<T extends { [key: string]: unknown }> = T[keyof T]
 export type ClassValue = ExtractClassValues<SlotsToClasses<string>>
