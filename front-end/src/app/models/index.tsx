@@ -1,8 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { BiEditAlt } from 'react-icons/bi'
-import { LuEye, LuTrash2 } from 'react-icons/lu'
+import { LuEye } from 'react-icons/lu'
 
 import { Table } from '@/components/table'
 import { TableAction } from '@/components/table/action'
@@ -31,10 +30,8 @@ export function AIModels() {
     (model: AIModel, columnKey: keyof AIModel | 'actions') => {
       if (columnKey === 'actions')
         return (
-          <div className="flex items-center justify-around gap-2">
+          <div className="flex justify-center">
             <TableAction icon={LuEye} tooltip="View" onClick={openModal(model, 'view')} />
-            <TableAction icon={BiEditAlt} tooltip="Edit" onClick={openModal(model, 'edit')} />
-            <TableAction icon={LuTrash2} tooltip="Delete" className="text-danger" />
           </div>
         )
 

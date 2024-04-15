@@ -84,6 +84,7 @@ export function Table<T extends IdField>({
             <TableColumn
               key={column.uid as any}
               align={column.uid === 'actions' ? 'center' : 'start'}
+              className={column.uid === 'actions' ? 'text-center' : ''}
               allowsSorting={column.sortable}
             >
               {column.name}
