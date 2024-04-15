@@ -26,9 +26,7 @@ export function AIModels() {
 
   const setFile = useCallback(
     (key: 'model_file' | 'classes_file') => (files?: File[]) => {
-      if (files) {
-        setValue(key, files[0])
-      }
+      setValue(key, files ? files[0] : (undefined as any))
     },
     [setValue]
   )
