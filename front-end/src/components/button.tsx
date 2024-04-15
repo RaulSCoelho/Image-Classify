@@ -4,8 +4,10 @@ import { Button as NextUIButton, ButtonProps as NextUIButtonProps } from '@nextu
 
 export interface ButtonProps extends NextUIButtonProps {}
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ color = 'primary', ...rest }, ref) => {
-  return <NextUIButton ref={ref} color={color} {...rest} />
-})
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ type = 'button', color = 'primary', ...rest }, ref) => {
+    return <NextUIButton ref={ref} type={type} color={color} {...rest} />
+  }
+)
 
 Button.displayName = 'Button'

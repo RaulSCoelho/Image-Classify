@@ -1,18 +1,37 @@
 'use client'
 
 import { useCallback, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/button'
 import { FlexWrap } from '@/components/flex-wrap'
+import { Input } from '@/components/input'
+import { FileInput } from '@/components/input/file'
+import { Modal } from '@/components/modal'
 import { Table } from '@/components/table'
 import { TableTopContent } from '@/components/table/types'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
-import { AIModel } from '@/types/ai-models'
+import { AIModel, AIModelUploadInput, AIModelUploadOutput, aiModelUploadSchema } from '@/types/ai-model'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Selection, Spinner } from '@nextui-org/react'
 
 export function AIModels() {
-  const { state: modelsState } = useSWRCustom<AIModel[]>('models/')
+  const { state: modelsState, post } = useSWRCustom<AIModel[]>('models/')
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]))
+  const [isNewModelModalOpen, setIsNewModelModalOpen] = useState(false)
+  const { watch, register, setValue, handleSubmit, formState } = useForm<AIModelUploadInput>({
+    resolver: zodResolver(aiModelUploadSchema)
+  })
+  const values = watch()
+
+  const setFile = useCallback(
+    (key: 'model_file' | 'classes_file') => (files?: File[]) => {
+      if (files) {
+        setValue(key, files[0])
+      }
+    },
+    [setValue]
+  )
 
   const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel) => {
     const cellValue = String(model[columnKey])
@@ -30,7 +49,7 @@ export function AIModels() {
       <FlexWrap className="justify-between">
         <div className="flex gap-2">
           <TableColumnSelector columns={columns} />
-          <Button>New</Button>
+          <Button onPress={() => setIsNewModelModalOpen(true)}>New</Button>
         </div>
         <TableSearch filterFields={filterFields} />
       </FlexWrap>
@@ -38,8 +57,15 @@ export function AIModels() {
     []
   )
 
+  async function onSubmit(formData: AIModelUploadOutput) {
+    const res = await post<AIModel>(formData, {
+      mutate: res => [...(modelsState.data || []), res.data]
+    })
+    res.ok && setIsNewModelModalOpen(false)
+  }
+
   return (
-    <div className="flex flex-col gap-3 p-5 sm:p-16">
+    <div className="p-5 sm:p-16">
       <Table
         aria-label="AI Models table"
         selectionMode="none"
@@ -66,6 +92,27 @@ export function AIModels() {
           { name: 'STD', uid: 'std', sortable: true }
         ]}
       />
+      <Modal
+        title="New AI Model"
+        isOpen={isNewModelModalOpen}
+        onOpenChange={setIsNewModelModalOpen}
+        onFormSubmit={handleSubmit(onSubmit as any)}
+        fullScreen={false}
+      >
+        <Modal.Body>
+          <Input label="Name" placeholder="Ex: YourAIModel" {...register('name')} />
+          <FileInput label="Model" value={values.model_file} onValueChange={setFile('model_file')} />
+          <FileInput label="Classes" value={values.classes_file} onValueChange={setFile('classes_file')} />
+          <Input label="Resize (optional)" placeholder="Ex: 224, 244" {...register('resize')} />
+          <Input label="Mean (optional)" placeholder="Ex: 0.4708, 0.4602, 0.4550" {...register('mean')} />
+          <Input label="STD (optional)" placeholder="Ex: 0.2593, 0.2584, 0.2634" {...register('std')} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="submit" color="primary" isLoading={formState.isSubmitting}>
+            Upload
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }

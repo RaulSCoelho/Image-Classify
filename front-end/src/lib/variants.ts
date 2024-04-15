@@ -2,7 +2,7 @@ export const mapPropsVariants = <T extends Record<string, any>, K extends keyof 
   props: T,
   variantKeys?: K[],
   removeVariantProps = true
-): readonly [Omit<T, K> | T, Pick<T, K>] => {
+): readonly [Omit<T, K>, Pick<T, K>] => {
   if (!variantKeys) {
     return [props, {}] as any
   }
