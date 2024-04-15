@@ -14,38 +14,24 @@ export function AIModels() {
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/')
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]))
   const [, setSelectedModel] = useState<AIModel>()
-  const [, setIsModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'view' | 'edit'>('view')
 
-  const openModal = useCallback(
-    (model: AIModel, mode: typeof modalMode) => () => {
-      setSelectedModel(model)
-      setModalMode(mode)
-      setIsModalOpen(true)
-    },
-    []
-  )
+  const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel | 'actions') => {
+    if (columnKey === 'actions')
+      return (
+        <div className="flex justify-center">
+          <TableAction icon={LuEye} tooltip="View" onClick={() => setSelectedModel(model)} />
+        </div>
+      )
 
-  const renderCell = useCallback(
-    (model: AIModel, columnKey: keyof AIModel | 'actions') => {
-      if (columnKey === 'actions')
-        return (
-          <div className="flex justify-center">
-            <TableAction icon={LuEye} tooltip="View" onClick={openModal(model, 'view')} />
-          </div>
-        )
+    const cellValue = String(model[columnKey])
 
-      const cellValue = String(model[columnKey])
-
-      switch (columnKey) {
-        case 'name':
-          return <p className="font-bold">{cellValue}</p>
-        default:
-          return cellValue
-      }
-    },
-    [openModal]
-  )
+    switch (columnKey) {
+      case 'name':
+        return <p className="font-bold">{cellValue}</p>
+      default:
+        return cellValue
+    }
+  }, [])
 
   const topContent: TableTopContent<AIModel> = useCallback(
     ({ columns, TableSearch, TableColumnSelector }) => (
@@ -89,7 +75,7 @@ export function AIModels() {
           if (cell === 'actions') return
           const model = modelsState.data?.find(model => String(model.id) === key)
           if (model) {
-            openModal(model, 'view')()
+            setSelectedModel(model)
           }
         }}
       />
