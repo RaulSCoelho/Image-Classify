@@ -27,7 +27,7 @@ export function search<T, K extends keyof T>(
   shouldSort: boolean = true,
   orderBy?: OrderBy
 ) {
-  if (!array) return undefined
+  if (!array) return []
 
   const searchParams = isArray(searchParam) ? searchParam : [searchParam]
   const filteredItems = array.filter(item => {

@@ -4,7 +4,7 @@ import { IoSearchOutline } from 'react-icons/io5'
 import { Input, InputProps } from '.'
 
 export const SearchInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ size = 'sm', type = 'search', placeholder = 'Type to search...', classNames, startContent, ...props }, ref) => {
+  ({ size = 'sm', type = 'text', placeholder = 'Type to search...', classNames, startContent, ...props }, ref) => {
     return (
       <Input
         ref={ref}
