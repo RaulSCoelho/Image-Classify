@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { FlexWrap } from '@/components/flex-wrap'
 import { ImageInput } from '@/components/input/image'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
+import { findMany } from '@/lib/object'
 import { AIModel } from '@/types/ai-model'
 import { PredictInput, PredictOutput, Prediction as PredictionType, predictSchema } from '@/types/prediction'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,12 +22,13 @@ export function CarsClassify() {
   } = useForm<PredictInput>({ resolver: zodResolver(predictSchema) })
   const { state: predsState, post, remove } = useSWRCustom<PredictionType[]>('predictions/', { fallbackData: [] })
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/', {
-    onFirstSuccess: models => onChangeModel(models[0].id)
+    onFirstSuccess: data => onChangeModel(data[0].id)
   })
   const values = watch()
+  const predictions = findMany(predsState.data, 'model.id', values.model_id)
 
   function onChangeModel(id: string | number) {
-    setValue('model_id', Number(id))
+    setValue('model_id', typeof id === 'string' ? Number(id) : id)
   }
 
   function onChangeImage(file?: File) {
@@ -52,13 +54,12 @@ export function CarsClassify() {
             <Autocomplete
               label="Select a model"
               size="sm"
-              selectedKey={String(values.model_id)}
-              onValueChange={onChangeModel}
+              selectedKey={values.model_id?.toString()}
+              onSelectionChange={onChangeModel}
+              isLoading={modelsState.isLoading}
             >
               {(modelsState.data || []).map(m => (
-                <AutocompleteItem key={m.id} value={m.id}>
-                  {m.name}
-                </AutocompleteItem>
+                <AutocompleteItem key={m.id}>{m.name}</AutocompleteItem>
               ))}
             </Autocomplete>
             <Button type="submit" color="secondary" className="h-auto min-h-unit-10" isLoading={isSubmitting}>
@@ -67,7 +68,7 @@ export function CarsClassify() {
           </FlexWrap>
         </Card>
       </form>
-      <PredictionsList predictions={predsState.data} remove={remove} isLoading={predsState.isLoading} />
+      <PredictionsList predictions={predictions} remove={remove} isLoading={predsState.isLoading} />
     </div>
   )
 }
