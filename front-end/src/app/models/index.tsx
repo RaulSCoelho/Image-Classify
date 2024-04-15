@@ -6,6 +6,7 @@ import { LuEye, LuTrash2 } from 'react-icons/lu'
 
 import { Table } from '@/components/table'
 import { TableAction } from '@/components/table/action'
+import { TableTopContent } from '@/components/table/types'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
 import { AIModel } from '@/types/ai-models'
 import { Selection } from '@nextui-org/react'
@@ -17,31 +18,47 @@ export function AIModels() {
   const [, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'view' | 'edit'>('view')
 
-  const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel | 'actions') => {
-    const onClickAction = (mode: typeof modalMode) => () => {
+  const openModal = useCallback(
+    (model: AIModel, mode: typeof modalMode) => () => {
       setSelectedModel(model)
       setModalMode(mode)
       setIsModalOpen(true)
-    }
+    },
+    []
+  )
 
-    if (columnKey === 'actions')
-      return (
-        <div className="flex items-center justify-around gap-2">
-          <TableAction icon={LuEye} tooltip="View" onClick={onClickAction('view')} />
-          <TableAction icon={BiEditAlt} tooltip="Edit" onClick={onClickAction('edit')} />
-          <TableAction icon={LuTrash2} tooltip="Delete" className="text-danger" />
-        </div>
-      )
+  const renderCell = useCallback(
+    (model: AIModel, columnKey: keyof AIModel | 'actions') => {
+      if (columnKey === 'actions')
+        return (
+          <div className="flex items-center justify-around gap-2">
+            <TableAction icon={LuEye} tooltip="View" onClick={openModal(model, 'view')} />
+            <TableAction icon={BiEditAlt} tooltip="Edit" onClick={openModal(model, 'edit')} />
+            <TableAction icon={LuTrash2} tooltip="Delete" className="text-danger" />
+          </div>
+        )
 
-    const cellValue = String(model[columnKey])
+      const cellValue = String(model[columnKey])
 
-    switch (columnKey) {
-      case 'name':
-        return <p className="font-bold">{cellValue}</p>
-      default:
-        return cellValue
-    }
-  }, [])
+      switch (columnKey) {
+        case 'name':
+          return <p className="font-bold">{cellValue}</p>
+        default:
+          return cellValue
+      }
+    },
+    [openModal]
+  )
+
+  const topContent: TableTopContent<AIModel> = useCallback(
+    ({ columns, TableSearch, TableColumnSelector }) => (
+      <div className="flex items-center justify-between">
+        <TableSearch />
+        <TableColumnSelector columns={columns} />
+      </div>
+    ),
+    []
+  )
 
   return (
     <div className="flex flex-col gap-3 p-5 sm:p-16">
@@ -51,6 +68,12 @@ export function AIModels() {
         emptyContent="No models found"
         className="max-h-full"
         items={modelsState.data || []}
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+        topContent={topContent}
+        renderCell={renderCell}
+        filterFields={['id', 'name', 'model_file']}
+        initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
         columns={[
           { name: 'ID', uid: 'id', sortable: true },
           { name: 'NAME', uid: 'name', sortable: true },
@@ -61,24 +84,11 @@ export function AIModels() {
           { name: 'STD', uid: 'std', sortable: true },
           { name: 'ACTIONS', uid: 'actions' }
         ]}
-        filterFields={['id', 'name', 'model_file']}
-        renderCell={renderCell}
-        initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-        topContent={({ columns, TableSearch, TableColumnSelector }) => (
-          <div className="flex items-center justify-between">
-            <TableSearch />
-            <TableColumnSelector columns={columns} />
-          </div>
-        )}
         onCellAction={(key, cell) => {
           if (cell === 'actions') return
           const model = modelsState.data?.find(model => String(model.id) === key)
           if (model) {
-            setSelectedModel(model)
-            setModalMode('view')
-            setIsModalOpen(true)
+            openModal(model, 'view')()
           }
         }}
       />
