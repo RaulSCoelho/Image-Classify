@@ -65,7 +65,7 @@ export function AIModels() {
       <Table
         aria-label="AI Models table"
         selectionMode="none"
-        emptyContent="No models found"
+        emptyContent={modelsState.isLoading ? undefined : 'No models found'}
         className="max-h-full"
         items={modelsState.data || []}
         selectedKeys={selectedKeys}
