@@ -1,10 +1,8 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { LuEye } from 'react-icons/lu'
 
 import { Table } from '@/components/table'
-import { TableAction } from '@/components/table/action'
 import { TableTopContent } from '@/components/table/types'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
 import { AIModel } from '@/types/ai-models'
@@ -15,14 +13,7 @@ export function AIModels() {
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]))
   const [, setSelectedModel] = useState<AIModel>()
 
-  const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel | 'actions') => {
-    if (columnKey === 'actions')
-      return (
-        <div className="flex justify-center">
-          <TableAction icon={LuEye} tooltip="View" onClick={() => setSelectedModel(model)} />
-        </div>
-      )
-
+  const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel) => {
     const cellValue = String(model[columnKey])
 
     switch (columnKey) {
@@ -55,7 +46,7 @@ export function AIModels() {
         topContent={topContent}
         renderCell={renderCell}
         filterFields={['id', 'name', 'model_file']}
-        initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
+        initialVisibleColumns={['id', 'name', 'model_file']}
         bodyProps={{
           emptyContent: modelsState.isLoading ? ' ' : 'No models found',
           isLoading: modelsState.isLoading,
@@ -68,8 +59,7 @@ export function AIModels() {
           { name: 'CLASSES', uid: 'classes_file', sortable: true },
           { name: 'RESIZE', uid: 'resize', sortable: true },
           { name: 'MEAN', uid: 'mean', sortable: true },
-          { name: 'STD', uid: 'std', sortable: true },
-          { name: 'ACTIONS', uid: 'actions' }
+          { name: 'STD', uid: 'std', sortable: true }
         ]}
         onCellAction={(key, cell) => {
           if (cell === 'actions') return
