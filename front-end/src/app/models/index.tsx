@@ -74,10 +74,9 @@ export function AIModels() {
         filterFields={['id', 'name', 'model_file']}
         initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
         bodyProps={{
-          emptyContent: 'No models found',
+          emptyContent: modelsState.isLoading ? ' ' : 'No models found',
           isLoading: modelsState.isLoading,
-          loadingContent: <Spinner color="primary" />,
-          hideEmptyContent: modelsState.isLoading
+          loadingContent: <Spinner color="primary" />
         }}
         columns={[
           { name: 'ID', uid: 'id', sortable: true },

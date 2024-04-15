@@ -35,7 +35,7 @@ export function Table<T extends IdField>({
   bodyProps = {},
   ...rest
 }: TableProps<T>) {
-  const { emptyContent = 'No items found', hideEmptyContent, ...restBodyProps } = bodyProps
+  const { emptyContent = 'No items found', ...restBodyProps } = bodyProps
   const [page, setPage] = useRecoilState(tablePageState)
   const [sortDescriptor, setSortDescriptor] = useRecoilState(tableSortDescriptorState)
   const { isMounted, pages, sortedItems, headerColumns } = useTableContext({
@@ -91,7 +91,7 @@ export function Table<T extends IdField>({
           )
         }}
       </TableHeader>
-      <TableBody emptyContent={hideEmptyContent ? undefined : emptyContent} items={sortedItems} {...restBodyProps}>
+      <TableBody emptyContent={emptyContent} items={sortedItems} {...restBodyProps}>
         {item => (
           <TableRow key={'id' in item ? item.id : item._id}>
             {columnKey => <TableCell>{renderCell(item, columnKey as keyof T)}</TableCell>}

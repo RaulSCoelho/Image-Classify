@@ -47,7 +47,5 @@ export interface TableProps<T extends IdField>
   onCellAction?(key: string, cell: string): void
   topContent?: TableTopContent<T>
   headerProps?: Omit<TableHeaderProps<T>, 'children' | 'columns'>
-  bodyProps?: Omit<TableBodyProps<T>, 'children' | 'items'> & {
-    hideEmptyContent?: boolean
-  }
+  bodyProps?: Omit<TableBodyProps<T>, 'children' | 'items'>
 }
