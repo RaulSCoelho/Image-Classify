@@ -65,7 +65,6 @@ export function AIModels() {
       <Table
         aria-label="AI Models table"
         selectionMode="none"
-        emptyContent={modelsState.isLoading ? undefined : 'No models found'}
         className="max-h-full"
         items={modelsState.data || []}
         selectedKeys={selectedKeys}
@@ -74,7 +73,12 @@ export function AIModels() {
         renderCell={renderCell}
         filterFields={['id', 'name', 'model_file']}
         initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
-        bodyProps={{ isLoading: modelsState.isLoading, loadingContent: <Spinner color="primary" /> }}
+        bodyProps={{
+          emptyContent: 'No models found',
+          isLoading: modelsState.isLoading,
+          loadingContent: <Spinner color="primary" />,
+          hideEmptyContent: modelsState.isLoading
+        }}
         columns={[
           { name: 'ID', uid: 'id', sortable: true },
           { name: 'NAME', uid: 'name', sortable: true },

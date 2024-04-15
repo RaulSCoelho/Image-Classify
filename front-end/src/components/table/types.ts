@@ -43,10 +43,11 @@ export interface TableProps<T extends IdField>
   initialVisibleColumns: (keyof T | 'actions')[]
   initialSortDescriptor?: SortDescriptor
   selectedKeys: Selection
-  emptyContent?: React.ReactNode
   onSelectionChange(keys: Selection): any
   onCellAction?(key: string, cell: string): void
   topContent?: TableTopContent<T>
   headerProps?: Omit<TableHeaderProps<T>, 'children' | 'columns'>
-  bodyProps?: Omit<TableBodyProps<T>, 'children' | 'items' | 'emptyContent'>
+  bodyProps?: Omit<TableBodyProps<T>, 'children' | 'items'> & {
+    hideEmptyContent?: boolean
+  }
 }
