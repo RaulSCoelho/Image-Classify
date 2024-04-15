@@ -9,7 +9,7 @@ import { TableAction } from '@/components/table/action'
 import { TableTopContent } from '@/components/table/types'
 import { useSWRCustom } from '@/hooks/use-swr-custom'
 import { AIModel } from '@/types/ai-models'
-import { Selection } from '@nextui-org/react'
+import { Selection, Spinner } from '@nextui-org/react'
 
 export function AIModels() {
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/')
@@ -74,7 +74,7 @@ export function AIModels() {
         renderCell={renderCell}
         filterFields={['id', 'name', 'model_file']}
         initialVisibleColumns={['id', 'name', 'model_file', 'actions']}
-        bodyProps={{ isLoading: modelsState.isLoading }}
+        bodyProps={{ isLoading: modelsState.isLoading, loadingContent: <Spinner color="primary" /> }}
         columns={[
           { name: 'ID', uid: 'id', sortable: true },
           { name: 'NAME', uid: 'name', sortable: true },
