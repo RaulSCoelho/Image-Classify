@@ -44,8 +44,8 @@ export function AIModels() {
         onSelectionChange={setSelectedKeys}
         topContent={topContent}
         renderCell={renderCell}
-        filterFields={['id', 'name', 'model_file']}
-        initialVisibleColumns={['id', 'name', 'model_file']}
+        filterFields={['id', 'name', 'model_file', 'classes_file']}
+        initialVisibleColumns={['id', 'name', 'model_file', 'classes_file']}
         bodyProps={{
           emptyContent: modelsState.isLoading ? ' ' : 'No models found',
           isLoading: modelsState.isLoading,
