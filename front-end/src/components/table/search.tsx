@@ -5,12 +5,18 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import { InputProps } from '../input'
 import { SearchInput } from '../input/search'
 import { tablePageState, tableSearchState } from './context'
+import { IdField, TableProps } from './types'
 
-export function TableSearch({
+type TableSearchProps<T extends IdField> = Omit<InputProps, 'value' | 'onValueChange' | 'onClear'> & {
+  filterFields?: TableProps<T>['filterFields']
+}
+
+export function TableSearch<T extends IdField>({
+  filterFields,
   placeholder,
   classNames,
   ...props
-}: Omit<InputProps, 'value' | 'onValueChange' | 'onClear'>) {
+}: TableSearchProps<T>) {
   const [searchValue, setSearchValue] = useRecoilState(tableSearchState)
   const setPage = useSetRecoilState(tablePageState)
 
@@ -34,7 +40,7 @@ export function TableSearch({
   return (
     <SearchInput
       value={searchValue}
-      placeholder={placeholder || "Search by ${filterFields.join(', ')}..."}
+      placeholder={placeholder || (filterFields ? `Search by ${filterFields.join(', ')}...` : undefined)}
       classNames={{
         ...classNames,
         base: ['w-full sm:max-w-[44%]', classNames?.base]

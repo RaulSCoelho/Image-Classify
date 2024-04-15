@@ -67,7 +67,15 @@ export function Table<T extends IdField>({
     <NextUITable
       selectedKeys={selectedKeys}
       selectionMode={selectionMode}
-      topContent={topContent?.({ items, columns, selectedKeys, selectionMode, TableSearch, TableColumnSelector })}
+      topContent={topContent?.({
+        items,
+        columns,
+        filterFields,
+        selectedKeys,
+        selectionMode,
+        TableSearch,
+        TableColumnSelector
+      })}
       topContentPlacement="outside"
       bottomContent={bottomContent}
       bottomContentPlacement="outside"

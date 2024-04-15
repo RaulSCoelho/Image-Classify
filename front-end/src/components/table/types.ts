@@ -21,7 +21,7 @@ export type TableTopContent<T extends IdField> = (
   props: {
     TableSearch: typeof TableSearch
     TableColumnSelector: typeof TableColumnSelector
-  } & Pick<TableProps<T>, 'items' | 'columns' | 'selectedKeys' | 'selectionMode'>
+  } & Pick<TableProps<T>, 'items' | 'columns' | 'filterFields' | 'selectedKeys' | 'selectionMode'>
 ) => React.ReactNode
 
 export interface TableProps<T extends IdField>

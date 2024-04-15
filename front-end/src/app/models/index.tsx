@@ -11,7 +11,6 @@ import { Selection, Spinner } from '@nextui-org/react'
 export function AIModels() {
   const { state: modelsState } = useSWRCustom<AIModel[]>('models/')
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]))
-  const [, setSelectedModel] = useState<AIModel>()
 
   const renderCell = useCallback((model: AIModel, columnKey: keyof AIModel) => {
     const cellValue = String(model[columnKey])
@@ -25,9 +24,9 @@ export function AIModels() {
   }, [])
 
   const topContent: TableTopContent<AIModel> = useCallback(
-    ({ columns, TableSearch, TableColumnSelector }) => (
-      <div className="flex items-center justify-between">
-        <TableSearch />
+    ({ filterFields, columns, TableSearch, TableColumnSelector }) => (
+      <div className="flex items-center justify-between gap-2">
+        <TableSearch filterFields={filterFields} />
         <TableColumnSelector columns={columns} />
       </div>
     ),
@@ -61,13 +60,6 @@ export function AIModels() {
           { name: 'MEAN', uid: 'mean', sortable: true },
           { name: 'STD', uid: 'std', sortable: true }
         ]}
-        onCellAction={(key, cell) => {
-          if (cell === 'actions') return
-          const model = modelsState.data?.find(model => String(model.id) === key)
-          if (model) {
-            setSelectedModel(model)
-          }
-        }}
       />
     </div>
   )
