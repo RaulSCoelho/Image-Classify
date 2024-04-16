@@ -1,16 +1,9 @@
 from pathlib import Path
 import django_heroku
-import os
-
-def env(key: str, default = None):
-    if isinstance(default, bool):
-        return os.environ.get(key, str(default)) == "True"
-    return os.environ.get(key, default)
-
+from utils.env import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
