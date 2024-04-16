@@ -1,28 +1,34 @@
 from .env import env
+from io import BytesIO
 from PIL import Image
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
-def compress_and_save_image(instance, filename):
-    image = Image.open(instance.image.path)
+def compress_image(image):
+    max_size_bytes = round(env("MAX_IMAGE_SIZE_LIMIT", 1024 * 1024 * 2.5, float))  # 2.5MB
 
-    max_width = env('MAX_IMAGE_WIDTH', 1024, int)  # Default 1024px
-    max_height = env('MAX_IMAGE_HEIGHT', 768, int)  # Default 768px
-    max_file_size = env('MAX_IMAGE_SIZE', 5242880, int)  # Default 5MB in bytes
+    if image.size <= max_size_bytes:
+        return image
 
-    # Validate image size
-    if image.size[0] > max_width or image.size[1] > max_height:
-        # Resize while maintaining aspect ratio
-        image.thumbnail((max_width, max_height), Image.ANTIALIAS)
+    img = Image.open(image)
+    output = BytesIO()
+    quality = 95
 
-    # Adjust compression quality dynamically based on validation
-    if image.size[0] * image.size[1] * image.getbands()[0] > max_file_size:
-        quality = 80  # Start with a decent quality
-        while image.size[0] * image.size[1] * image.getbands()[0] > max_file_size:
-            quality -= 5  # Reduce quality in steps of 5 until file size is below limit
-            if quality < 50:  # Set a minimum quality threshold
-                raise ValidationError('Image exceeds size limit. Please upload a smaller image.')
-            image.save(instance.image.path, optimize=True, quality=quality)
-    else:
-        image.save(instance.image.path, optimize=True, quality=95)  # Save at high quality if within size limit
+    # Iterate until the image size is reduced to fit within max_size_bytes
+    while True:
+        img.save(output, format=img.format, quality=quality)
+        output.seek(0, 2)  # Move to the end of the buffer
+        print(f"Compressing from {output.tell()} bytes")
+        if output.tell() <= max_size_bytes:
+            break
+        else:
+            quality -= 5
+            output.seek(0)
+            output.truncate()
 
-    return filename
+        if quality < 50:
+            raise ValidationError(f"Image cannot be compressed to fit {max_size_bytes} bytes. Consider using a lower resolution image.")
+
+    output.seek(0)
+    content_type = Image.MIME.get(img.format)
+    return InMemoryUploadedFile(output, 'ImageField', image.name, content_type, output.tell(), None)
