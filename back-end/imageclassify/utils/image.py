@@ -18,7 +18,6 @@ def compress_image(image):
     while True:
         img.save(output, format=img.format, quality=quality)
         output.seek(0, 2)  # Move to the end of the buffer
-        print(f"Compressing from {output.tell()} bytes")
         if output.tell() <= max_size_bytes:
             break
         else:
