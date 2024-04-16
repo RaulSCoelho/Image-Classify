@@ -11,7 +11,7 @@ export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
   fetcherConfig?: ApiRequestConfig<T>
   onFirstSuccess?: MaybePromise<(data: T) => void>
 }
-export type SWRRequestMutate<T, RES> = (res: ApiResponse<RES>) => T
+export type SWRRequestMutate<T, RES> = (props: { res: ApiResponse<RES>; state?: T }) => T
 export type SWRCustomRequestConfig<T, REQ> = ApiRequestConfig<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
 export type SWRCustomGet<T> = ReturnType<typeof useSWRCustom<T>>['get']
 export type SWRCustomPost<T> = ReturnType<typeof useSWRCustom<T>>['post']
@@ -40,7 +40,7 @@ export function useSWRCustom<T>(url: string, { fetcherConfig, onFirstSuccess, ..
     setIsLoading(true)
 
     const res = await promise
-    res.ok && mutate && state.mutate(mutate(res))
+    res.ok && mutate && state.mutate(mutate({ res, state: state.data }))
 
     setIsLoading(false)
     return res

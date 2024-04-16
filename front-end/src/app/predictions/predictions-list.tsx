@@ -26,8 +26,8 @@ export function PredictionsList({ predictions, remove, isLoading }: PredictionsL
   async function deletePrediction(id: number) {
     await remove<void>({
       url: `predictions/${id}/`,
-      mutate: () => {
-        return predictions?.filter(p => p.id !== id) || []
+      mutate: ({ state }) => {
+        return state?.filter(p => p.id !== id) || []
       }
     })
   }

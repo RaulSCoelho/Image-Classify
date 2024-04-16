@@ -38,9 +38,9 @@ export function CarsClassify() {
   async function onSubmit(formData: PredictOutput) {
     if (!formData) return
     await post<PredictionType>(formData, {
-      mutate: res => {
+      mutate: ({ res, state }) => {
         reset({ model_id: values.model_id })
-        return [...(predsState.data || []), res.data]
+        return [...(state || []), res.data]
       }
     })
   }

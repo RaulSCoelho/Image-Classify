@@ -57,7 +57,7 @@ export function AIModels() {
 
   async function onSubmit(formData: AIModelUploadOutput) {
     const res = await post<AIModel>(formData, {
-      mutate: res => [...(modelsState.data || []), res.data]
+      mutate: ({ res, state }) => [...(state || []), res.data]
     })
     res.ok && setIsNewModelModalOpen(false)
   }
