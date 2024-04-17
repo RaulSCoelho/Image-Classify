@@ -18,5 +18,5 @@ export function useQueue<T>(action: MaybePromise<(item: T) => void>, disable?: b
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, disable])
 
-  return [actions, queue, setQueue] as const
+  return { ...actions, queue, setQueue }
 }

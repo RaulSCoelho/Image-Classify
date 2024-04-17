@@ -30,7 +30,7 @@ export function useSWRCustom<T>(url: string, { fetcherConfig, onFirstSuccess, ..
   const [isPutLoading, setIsPutLoading] = useState(false)
   const [isRemoveLoading, setIsRemoveLoading] = useState(false)
   const [firstSuccess, setFirstSuccess] = useState(true)
-  const [{ add: addMutation }] = useQueue<MutationQueue<T>>(({ res, mutate }) => {
+  const { add: addMutation } = useQueue<MutationQueue<T>>(({ res, mutate }) => {
     state.mutate(mutate({ res, state: state.data }))
   })
 
