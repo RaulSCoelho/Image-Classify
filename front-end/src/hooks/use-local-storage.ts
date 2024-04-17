@@ -40,4 +40,4 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue, removeValue] as const
 }
 
-export type UseLocalStorageReturn = ReturnType<typeof useLocalStorage>
+export type UseLocalStorage = ReturnType<typeof useLocalStorage>

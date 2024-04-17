@@ -9,7 +9,7 @@ export function useIsMounted(fn: MaybePromise = () => {}) {
   const [isMounted, setIsMounted] = useState(false)
 
   useFirstRenderEffect(() => {
-    maybePromise(fn).then(() => setIsMounted(true))
+    maybePromise(fn).finally(() => setIsMounted(true))
   })
 
   return isMounted
