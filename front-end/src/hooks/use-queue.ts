@@ -5,7 +5,7 @@ import { MaybePromise } from '@/types/promise'
 
 import { useArrayState } from './use-array-state'
 
-export function useQueue<T>(action: MaybePromise<(item: T) => void>, disable: boolean) {
+export function useQueue<T>(action: MaybePromise<(item: T) => void>, disable?: boolean) {
   const queueState = useArrayState<T>([])
   const queue = queueState[0]
   const remove = queueState[1].remove
