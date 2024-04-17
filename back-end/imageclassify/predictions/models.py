@@ -14,6 +14,9 @@ class Prediction(models.Model):
     prediction = models.CharField(max_length=100, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['uploaded_at']
+
     def __str__(self):
         return self.prediction
 
