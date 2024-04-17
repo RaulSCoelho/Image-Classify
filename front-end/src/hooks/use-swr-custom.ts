@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from '@/lib/api'
 import { fetcher } from '@/lib/fetcher'
@@ -7,40 +7,50 @@ import { ApiRequestConfig, ApiResponse } from '@/types/api'
 import { MaybePromise } from '@/types/promise'
 import useSWR from 'swr'
 
-export type SWRConfiguration<T> = Parameters<typeof useSWR<T>>[2] & {
+import { useQueue } from './use-queue'
+
+export type SWRCustom<T = any> = ReturnType<typeof useSWRCustom<T>>
+export type SWRRequestMutate<T, RES> = (props: { res: ApiResponse<RES>; state?: T }) => T
+export type SWRCustomRequestConfig<T, RES> = ApiRequestConfig<RES> & { mutate?: SWRRequestMutate<T, RES> }
+
+export type SWRCustomConfigs<T> = Parameters<typeof useSWR<T>>[2] & {
   fetcherConfig?: ApiRequestConfig<T>
   onFirstSuccess?: MaybePromise<(data: T) => void>
 }
-export type SWRRequestMutate<T, RES> = (props: { res: ApiResponse<RES>; state?: T }) => T
-export type SWRCustomRequestConfig<T, REQ> = ApiRequestConfig<REQ> & { mutate?: SWRRequestMutate<T, REQ> }
-export type SWRCustomGet<T> = ReturnType<typeof useSWRCustom<T>>['get']
-export type SWRCustomPost<T> = ReturnType<typeof useSWRCustom<T>>['post']
-export type SWRCustomPut<T> = ReturnType<typeof useSWRCustom<T>>['put']
-export type SWRCustomRemove<T> = ReturnType<typeof useSWRCustom<T>>['remove']
 
-export function useSWRCustom<T>(url: string, { fetcherConfig, onFirstSuccess, ...config }: SWRConfiguration<T> = {}) {
+export type MutationQueue<T, RES = any> = {
+  mutate: SWRRequestMutate<T, RES>
+  res: ApiResponse<RES>
+}
+
+export function useSWRCustom<T>(url: string, { fetcherConfig, onFirstSuccess, ...config }: SWRCustomConfigs<T> = {}) {
   const state = useSWR(url, fetcher.get<T>(fetcherConfig), config)
   const [isGetLoading, setIsGetLoading] = useState(false)
   const [isPostLoading, setIsPostLoading] = useState(false)
   const [isPutLoading, setIsPutLoading] = useState(false)
   const [isRemoveLoading, setIsRemoveLoading] = useState(false)
   const [firstSuccess, setFirstSuccess] = useState(true)
+  const [, { add: addMutation }] = useQueue<MutationQueue<T>>(({ res, mutate }) => {
+    state.mutate(mutate({ res, state: state.data }))
+  })
 
   useEffect(() => {
-    if (firstSuccess && state.data) {
+    if (state.isLoading || !firstSuccess) return
+
+    if (state.data) {
       maybePromise(onFirstSuccess, state.data).finally(() => setFirstSuccess(false))
     }
-  }, [firstSuccess, onFirstSuccess, state.data])
+  }, [firstSuccess, onFirstSuccess, state.data, state.isLoading])
 
   async function baseRequest<RES = T>(
     promise: Promise<ApiResponse<RES>>,
-    setIsLoading: Dispatch<SetStateAction<boolean>>,
+    setIsLoading: (isLoading: boolean) => void,
     mutate?: SWRRequestMutate<T, RES>
   ) {
     setIsLoading(true)
 
     const res = await promise
-    res.ok && mutate && state.mutate(mutate({ res, state: state.data }))
+    res.ok && mutate && addMutation({ mutate, res })
 
     setIsLoading(false)
     return res

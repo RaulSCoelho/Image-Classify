@@ -1,5 +1,5 @@
 import { useNavSearch } from '@/hooks/use-nav-search'
-import { SWRCustomRemove } from '@/hooks/use-swr-custom'
+import { SWRCustom } from '@/hooks/use-swr-custom'
 import { range } from '@/lib/numbers'
 import { len } from '@/lib/object'
 import { search } from '@/lib/string'
@@ -10,7 +10,7 @@ import { Prediction } from './prediction'
 
 interface PredictionsListProps {
   predictions?: PredictionType[]
-  remove: SWRCustomRemove<PredictionType[]>
+  remove: SWRCustom<PredictionType[]>['remove']
   isLoading: boolean
 }
 
